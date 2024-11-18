@@ -12,7 +12,4 @@ app.use(express.json());
 app.listen(process.env.APP_PORT, async () => {
   await testConnection();
   console.log(`Running at http://localhost:${process.env.APP_PORT}`);
-});app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
 });
