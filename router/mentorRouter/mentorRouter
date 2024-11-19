@@ -6,7 +6,7 @@ import {
   ambilSemuaMentor,
 } from "../controllers/mentor.js";
 
-const mentorRoutes = express.Router(); // Sama, gunakan .Router()
+const mentorRoutes = express.Router();
 
 // Routes untuk mentor
 mentorRoutes.post("/mentor", tambahMentor);
