@@ -14,4 +14,4 @@ mentorRoutes.put("/mentor/email/:email_mentor", editMentorByEmail);
 mentorRoutes.delete("/mentor/email/:email_mentor", hapusMentor);
 mentorRoutes.get("/mentor", ambilSemuaMentor);
 
-export default mentorRoutes; // Pastikan diekspor sebagai default
+export default mentorRoutes;

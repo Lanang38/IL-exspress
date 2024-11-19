@@ -7,7 +7,7 @@ import {
   updateFotoAdmin,
   hapusFotoAdmin,
   updateAdmin,
-} from "../controllers/adminController.js";
+} from "../controllers/admin.js";
 
 const adminRoutes = express.Router();
 
@@ -20,4 +20,4 @@ adminRoutes.put("/admin/email/:email/foto", updateFotoAdmin);
 adminRoutes.delete("/admin/email/:email/foto", hapusFotoAdmin);
 adminRoutes.put("/admin/email/:email", updateAdmin);
 
-export default adminRoutes; // Pastikan diekspor sebagai default
+export default adminRoutes;
