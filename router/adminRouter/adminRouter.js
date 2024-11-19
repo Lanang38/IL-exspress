@@ -9,7 +9,7 @@ import {
   updateAdmin,
 } from "../controllers/adminController.js";
 
-const adminRoutes = express.Router(); // Pastikan ini menggunakan .Router()
+const adminRoutes = express.Router();
 
 // Routes untuk admin
 adminRoutes.post("/login", loginAdmin);
