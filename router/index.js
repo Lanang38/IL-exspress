@@ -3,6 +3,7 @@ import adminRoutes from "./adminRouter/adminRouter";
 import mentorRoutes from "./mentorRouter/mentorRouter";
 import fiturRoutes from "./fiturRouter/fiturRouter";
 import catatanRoutes from "./catatanRouter/catatanRouter";
+import penggunaRoutes from "./penggunaRouter/penggunaRouter";
 
 
 // Inisialisasi router utama
@@ -16,5 +17,7 @@ Router.use(`${apiBasePath}/mentor`, mentorRoutes);
 Router.use(`${apiBasePath}/fitur`, fiturRoutes);
 
 Router.use(`${apiBasePath}/catatan`, catatanRoutes);
+
+Router.use(`${apiBasePath}/pengguna`, penggunaRoutes)
 
 export default Router;
