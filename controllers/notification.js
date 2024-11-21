@@ -1,4 +1,4 @@
-import { query } from "../Database/db";
+import { query } from "../Database/db.js";
 
 // Tambah Notifikasi
 export const tambahNotifikasi = async (req, res) => {
