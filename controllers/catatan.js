@@ -7,7 +7,7 @@ export const tambahCatatan = async (req, res) => {
     const countResult = await query("SELECT COUNT(*) AS total FROM catatan");
     const totalCatatan = countResult[0].total;
 
-    if (totalCatatan >= 5) {
+    if (totalCatatan >= 3) {
       await query("DELETE FROM catatan ORDER BY tanggal_dibuat ASC LIMIT 1");
     }
 
