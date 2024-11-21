@@ -1,12 +1,18 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import bodyParser from "body-parser";
 import { testConnection } from "./Database/db.js";
 
 dotenv.config();
 const app = express();
 
+app.use(bodyParser.urlencoded({ extended: true })); 
+app.use(bodyParser.json()); 
+
 app.use(cors());
+
+// Middleware Express lainnya
 app.use(express.json());
 
 app.listen(process.env.APP_PORT, async () => {

@@ -13,7 +13,7 @@ const db = mysql2.createPool({
 async function testConnection() {
   try {
     await db.getConnection();
-    console.log("Connection Database Succses :)");
+    console.log("Connection Database Succsess :)");
   } catch (error) {
     console.error("Database Connection Failed", error);
   }
