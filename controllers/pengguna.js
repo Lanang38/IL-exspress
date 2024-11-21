@@ -1,4 +1,4 @@
-import { query } from "../Database/db";
+import { query } from "../Database/db.js";
 
 // Get paginated users
 export const getUsers = async (req, res) => {

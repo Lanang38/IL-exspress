@@ -1,4 +1,4 @@
-import { query } from "../Database/db";
+import { query } from "../Database/db.js";
 
 // Menambahkan fitur
 export const tambahFitur = async (req, res) => {

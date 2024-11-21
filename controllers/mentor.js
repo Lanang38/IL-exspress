@@ -1,4 +1,4 @@
-import { query } from "../Database/db";
+import { query } from "../Database/db.js";
 
 // Menambahkan mentor
 export const tambahMentor = async (req, res) => {
