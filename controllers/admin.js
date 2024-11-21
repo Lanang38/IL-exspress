@@ -1,4 +1,5 @@
 import { query } from '../Database/db.js';  // Adjusted path to your database module
+import { adminImages } from "../middlewares/multerAdmin.js";
 
 // Login using email and password
 export const loginAdmin = async (req, res) => {
@@ -41,16 +42,23 @@ export const ambilSemuaAdmin = async (req, res) => {
   }
 };
 
-// Add admin photo
+// Tambahkan foto admin
 export const tambahFotoAdmin = async (req, res) => {
   const { email } = req.params;
-  const { foto } = req.body;
+  // Mengecek apakah file ada di request
+  if (!req.file) {
+    return res.status(400).json({ msg: 'No file uploaded' });
+  }
+
+  const fotoPath = `/uploads/admin/images/${req.file.filename}`;
+
   try {
-    const result = await query('UPDATE admin SET foto_pr = ? WHERE email_admin = ?', [foto, email]);
+    // Update database dengan path foto yang baru
+    const result = await query('UPDATE admin SET foto_pr = ? WHERE email_admin = ?', [fotoPath, email]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ msg: 'Admin not found' });
     }
-    return res.status(200).json({ msg: 'Photo added successfully' });
+    return res.status(200).json({ msg: 'Photo added successfully', fotoPath });
   } catch (error) {
     console.error('Failed to add photo', error);
     res.status(500).json({ msg: 'Failed to add photo' });
@@ -64,7 +72,7 @@ export const updateFotoAdmin = async (req, res) => {
   const { foto } = req.body;
   try {
     await query('UPDATE admin SET foto_pr = ? WHERE email_admin = ?', [foto, email]);
-    return res.status(200).json({ msg: 'Photo updated successfully' });
+    return res.status(200).json({ msg: 'Photo updated success' });
   } catch (error) {
     console.error('Failed to update photo', error);
     res.status(500).json({ msg: 'Failed to update photo' });
