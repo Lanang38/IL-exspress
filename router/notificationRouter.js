@@ -5,7 +5,7 @@ import {
   ambilNotifikasiById,
   editNotifikasi,
   hapusNotifikasi,
-} from "../../controllers/notification.js";
+} from "../controllers/notification.js";
 
 const notificationRoutes = express.Router();
 

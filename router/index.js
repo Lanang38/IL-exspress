@@ -1,26 +1,19 @@
-import express from "express";
-import adminRoutes from "./adminRouter/adminRouter";
-import mentorRoutes from "./mentorRouter/mentorRouter";
-import fiturRoutes from "./fiturRouter/fiturRouter";
-import catatanRoutes from "./catatanRouter/catatanRouter";
-import penggunaRoutes from "./penggunaRouter/penggunaRouter";
-import notificationRoutes from "./notificationRouter/notificationRouter";
+import express from 'express';
+import adminRoutes from './adminRouter.js';
+import catatanRoutes from './catatanRouter.js';
+import fiturRoutes from './fiturRouter.js';
+import mentorRoutes from './mentorRouter.js';
+import notificationRoutes from './notificationRouter.js';
+import penggunaRoutes from './penggunaRouter.js';
 
+const router = express.Router();
 
-// Inisialisasi router utama
-const Router = express.Router();
-const apiBasePath = "/api/v1";
+// Gabungkan semua route
+router.use('/adminRouter', adminRoutes);
+router.use('/catatanRouter', catatanRoutes);
+router.use('/fiturRouter', fiturRoutes);
+router.use('/mentorRouter', mentorRoutes);
+router.use('/notifRouter', notificationRoutes);
+router.use('/penggunaRouter', penggunaRoutes);
 
-Router.use(`${apiBasePath}/admin`, adminRoutes);
-
-Router.use(`${apiBasePath}/mentor`, mentorRoutes);
-
-Router.use(`${apiBasePath}/fitur`, fiturRoutes);
-
-Router.use(`${apiBasePath}/catatan`, catatanRoutes);
-
-Router.use(`${apiBasePath}/pengguna`, penggunaRoutes)
-
-Router.use(`${apiBasePath}/notification`, notificationRoutes);
-
-export default Router;
+export default router;

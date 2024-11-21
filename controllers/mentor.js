@@ -1,19 +1,26 @@
-import { query } from "../Database/db";
+import { query } from "../Database/db.js";
 
 // Menambahkan mentor
 export const tambahMentor = async (req, res) => {
-  const { nama_mentor, email_mentor, telepon_mentor, kategori_id, link_zoom, waktu_mulai, waktu_selesai } = req.body;
+  const { email_mentor } = req.body;
   try {
+    // Periksa apakah email sudah ada
+    const existing = await query("SELECT * FROM mentor WHERE email_mentor = ?", [email_mentor]);
+    if (existing.length > 0) {
+      return res.status(400).json({ msg: "Email sudah terdaftar, gunakan email lain" });
+    }
+    // Jika tidak ada, tambahkan mentor baru
     await query(
       "INSERT INTO mentor (nama_mentor, email_mentor, telepon_mentor, kategori_id, link_zoom, waktu_mulai, waktu_selesai) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [nama_mentor, email_mentor, telepon_mentor, kategori_id, link_zoom, waktu_mulai, waktu_selesai]
+      [req.body.nama_mentor, email_mentor, req.body.telepon_mentor, req.body.kategori_id, req.body.link_zoom, req.body.waktu_mulai, req.body.waktu_selesai]
     );
-    return res.status(201).json({ msg: "Mentor berhasil ditambahkan" });
+    res.status(201).json({ msg: "Mentor berhasil ditambahkan" });
   } catch (error) {
     console.error("Gagal menambahkan mentor", error);
     res.status(500).json({ msg: "Gagal menambahkan mentor" });
   }
 };
+
 
 // Mengedit mentor berdasarkan email
 export const editMentorByEmail = async (req, res) => {

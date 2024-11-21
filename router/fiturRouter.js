@@ -7,6 +7,6 @@ const fiturRoutes = express.Router();
 fiturRoutes.post("/fitur", tambahFitur);
 
 // Route untuk menghapus fitur berdasarkan ID
-fiturRoutes.delete("/fitur/:id_fitur", hapusFitur);
+fiturRoutes.delete("/fitur/:fitur_id", hapusFitur);
 
 export default fiturRoutes;

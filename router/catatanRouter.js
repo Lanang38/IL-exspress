@@ -7,6 +7,6 @@ const catatanRoutes = express.Router();
 catatanRoutes.post("/catatan", tambahCatatan);
 
 // Route untuk menghapus catatan berdasarkan ID
-catatanRoutes.delete("/catatan/:id_catatan", hapusCatatan);
+catatanRoutes.delete("/catatan/:catatan_id", hapusCatatan);
 
 export default catatanRoutes;
