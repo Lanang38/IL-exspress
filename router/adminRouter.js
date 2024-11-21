@@ -8,16 +8,17 @@ import {
   hapusFotoAdmin,
   updateAdmin,
 } from '../controllers/admin.js';
+import { adminImages } from "../middlewares/multerAdmin.js";
 
 const adminRoutes = express.Router();
 
-// Routes for admin
-adminRoutes.post('/login', loginAdmin);  // POST route for admin login
-adminRoutes.get('/email/:email', ambilAdminByEmail);  // GET route for fetching admin by email
-adminRoutes.get('/', ambilSemuaAdmin);  // GET route for fetching all admins
-adminRoutes.post('/email/:email/foto', tambahFotoAdmin);  // POST route for adding admin photo
-adminRoutes.put('/email/:email/foto', updateFotoAdmin);  // PUT route for updating admin photo
-adminRoutes.delete('/email/:email/foto', hapusFotoAdmin);  // DELETE route for removing admin photo
-adminRoutes.put('/email/:email', updateAdmin);  // PUT route for updating admin details
+// Routes untuk admin
+adminRoutes.post('/login', loginAdmin);  // POST route untuk login admin
+adminRoutes.get('/email/:email', ambilAdminByEmail);  // GET route untuk mengambil admin berdasarkan email
+adminRoutes.get('/', ambilSemuaAdmin);  // GET route untuk mengambil semua admin
+adminRoutes.post('/email/:email/foto', adminImages.single('foto'), tambahFotoAdmin);  // POST route untuk menambah foto admin
+adminRoutes.put('/email/:email/foto', adminImages.single('foto'), updateFotoAdmin);  // PUT route untuk update foto admin
+adminRoutes.delete('/email/:email/foto', hapusFotoAdmin);  // DELETE route untuk menghapus foto admin
+adminRoutes.put('/email/:email', updateAdmin);  // PUT route untuk update data admin
 
 export default adminRoutes;
