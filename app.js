@@ -5,6 +5,8 @@ import bodyParser from 'body-parser';
 import { testConnection } from './Database/db.js'; // Import the DB connection
 import adminRoutes from './router/adminRouter.js'; // Import admin routes
 import catatanRoutes from './router/catatanRouter.js'; 
+import fiturRoutes from './router/fiturRouter.js';
+import mentorRoutes from './router/mentorRouter.js';
 
 dotenv.config();
 const app = express();
@@ -18,6 +20,11 @@ app.use(cors());
 app.use('/adminRouter', adminRoutes);
 // catatan routes
 app.use('/catatanRouter', catatanRoutes);
+// fitur routes
+app.use('/fiturRouter', fiturRoutes);
+// mentor routes
+app.use('/mentorRouter', mentorRoutes);
+
 
 // Start the server
 app.listen(process.env.APP_PORT, async () => {
