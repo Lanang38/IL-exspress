@@ -4,6 +4,7 @@ import path from "path";
 // Konfigurasi Multer untuk penyimpanan file
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    // Pastikan folder 'uploads/admin/images' sudah ada atau buat terlebih dahulu
     cb(null, "uploads/admin/images");
   },
   filename: (req, file, cb) => {
@@ -28,8 +29,9 @@ const fileFilter = (req, file, cb) => {
 // Inisialisasi Multer
 const adminImages = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 }, // Maksimal file 5MB
   fileFilter: fileFilter,
 });
 
 export { adminImages };
+  

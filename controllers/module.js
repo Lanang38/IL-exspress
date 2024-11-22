@@ -1,11 +1,15 @@
 import { query } from "../Database/db.js";
 
+
 // Tambah data modul
 export const createModul = async (req, res) => {
-  const { nama_modul, text_module, file, gambar, video, kategori_id } = req.body;
+  const { nama_modul, text_module, kategori_id } = req.body;
+  const file = req.file ? req.file.path : null;
+  const gambar = req.body.gambar || null;
+  const video = req.body.video || null;
 
   if (!nama_modul || !kategori_id) {
-    return res.status(400).json({ success: false, message: "Fields nama_modul and kategori_id are required." });
+    return res.status(400).json({ success: false, message: "Field nama_modul dan kategori_id wajib diisi." });
   }
 
   try {
@@ -13,10 +17,10 @@ export const createModul = async (req, res) => {
       "INSERT INTO modul (nama_modul, text_module, file, gambar, video, kategori_id) VALUES (?, ?, ?, ?, ?, ?)",
       [nama_modul, text_module, file, gambar, video, kategori_id]
     );
-    res.status(201).json({ success: true, message: "Modul created successfully." });
+    res.status(201).json({ success: true, message: "Modul berhasil dibuat." });
   } catch (error) {
-    console.error("Error creating modul:", error);
-    res.status(500).json({ success: false, message: "Server Error", error });
+    console.error("Error saat membuat modul:", error);
+    res.status(500).json({ success: false, message: "Kesalahan Server", error });
   }
 };
 
@@ -28,7 +32,7 @@ export const getAllModuls = async (req, res) => {
     );
 
     if (moduls.length === 0) {
-      return res.status(404).json({ success: false, message: "No modules found." });
+      return res.status(404).json({ success: false, message: "Tidak ada modul ditemukan." });
     }
 
     res.status(200).json({
@@ -36,12 +40,12 @@ export const getAllModuls = async (req, res) => {
       data: moduls,
     });
   } catch (error) {
-    console.error("Error fetching modules:", error);
-    res.status(500).json({ success: false, message: "Server Error", error });
+    console.error("Error saat mengambil modul:", error);
+    res.status(500).json({ success: false, message: "Kesalahan Server", error });
   }
 };
 
-// Menampilkan data hanya nama dan tanggal dibuat
+// Menampilkan data modul hanya nama dan tanggal dibuat
 export const getModulSimple = async (req, res) => {
   try {
     const moduls = await query(
@@ -49,7 +53,7 @@ export const getModulSimple = async (req, res) => {
     );
 
     if (moduls.length === 0) {
-      return res.status(404).json({ success: false, message: "No modules found." });
+      return res.status(404).json({ success: false, message: "Tidak ada modul ditemukan." });
     }
 
     res.status(200).json({
@@ -57,32 +61,35 @@ export const getModulSimple = async (req, res) => {
       data: moduls,
     });
   } catch (error) {
-    console.error("Error fetching simple modules:", error);
-    res.status(500).json({ success: false, message: "Server Error", error });
+    console.error("Error saat mengambil modul sederhana:", error);
+    res.status(500).json({ success: false, message: "Kesalahan Server", error });
   }
 };
 
 // Edit data modul
 export const editModul = async (req, res) => {
   const { modul_id } = req.params;
-  const { nama_modul, text_module, file, gambar, video, kategori_id } = req.body;
+  const { nama_modul, text_module, kategori_id } = req.body;
+  const file = req.file ? req.file.path : null;  // Menangani unggahan file
+  const gambar = req.body.gambar || null; // Mengasumsikan gambar ditangani di field lain
+  const video = req.body.video || null; // Mengasumsikan video ditangani di field lain
 
   try {
-    // Periksa apakah modul ada
+    // Periksa apakah modul ada di database
     const modulExists = await query("SELECT * FROM modul WHERE modul_id = ?", [modul_id]);
     if (modulExists.length === 0) {
-      return res.status(404).json({ success: false, message: "Modul not found." });
+      return res.status(404).json({ success: false, message: "Modul tidak ditemukan." });
     }
 
-    // Update data modul
+    // Memperbarui data modul
     await query(
       "UPDATE modul SET nama_modul = ?, text_module = ?, file = ?, gambar = ?, video = ?, kategori_id = ? WHERE modul_id = ?",
       [nama_modul, text_module, file, gambar, video, kategori_id, modul_id]
     );
-    res.status(200).json({ success: true, message: "Modul updated successfully." });
+    res.status(200).json({ success: true, message: "Modul berhasil diperbarui." });
   } catch (error) {
-    console.error("Error updating modul:", error);
-    res.status(500).json({ success: false, message: "Server Error", error });
+    console.error("Error saat memperbarui modul:", error);
+    res.status(500).json({ success: false, message: "Kesalahan Server", error });
   }
 };
 
@@ -94,14 +101,14 @@ export const deleteModul = async (req, res) => {
     // Periksa apakah modul ada
     const modulExists = await query("SELECT * FROM modul WHERE modul_id = ?", [modul_id]);
     if (modulExists.length === 0) {
-      return res.status(404).json({ success: false, message: "Modul not found." });
+      return res.status(404).json({ success: false, message: "Modul tidak ditemukan." });
     }
 
     // Hapus data modul
     await query("DELETE FROM modul WHERE modul_id = ?", [modul_id]);
-    res.status(200).json({ success: true, message: "Modul deleted successfully." });
+    res.status(200).json({ success: true, message: "Modul berhasil dihapus." });
   } catch (error) {
-    console.error("Error deleting modul:", error);
-    res.status(500).json({ success: false, message: "Server Error", error });
+    console.error("Error saat menghapus modul:", error);
+    res.status(500).json({ success: false, message: "Kesalahan Server", error });
   }
 };

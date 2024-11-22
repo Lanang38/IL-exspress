@@ -1,7 +1,7 @@
 import multer from "multer";
 import path from "path";
 
-// Konfigurasi Multer untuk penyimpanan file
+// Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/materi/videos");
@@ -12,10 +12,10 @@ const storage = multer.diskStorage({
     const fileExtension = path.extname(file.originalname);
     const fileName = `${uniqueNumber}-${timestamp}${fileExtension}`;
     cb(null, fileName);
-  },
+  }
 });
 
-// Filter file untuk hanya menerima video
+// File filter
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ["video/mp4", "video/mkv", "video/avi", "video/mov"];
   if (allowedTypes.includes(file.mimetype)) {
@@ -25,11 +25,11 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Inisialisasi Multer
+// Multer configuration
 const materiVideos = multer({
   storage: storage,
-  limits: { fileSize: 50 * 1024 * 1024 },
-  fileFilter: fileFilter,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max size
+  fileFilter: fileFilter
 });
 
 export { materiVideos };

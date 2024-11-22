@@ -2,13 +2,26 @@ import { query } from "../Database/db.js";
 
 // Menambahkan kategori
 export const addKategori = async (req, res) => {
-  const { nama_kategori, penjelasan, gambar } = req.body;
+  const { nama_kategori, penjelasan } = req.body;
 
-  if (!nama_kategori || !penjelasan || !gambar) {
-    return res.status(400).json({ success: false, message: "All fields are required." });
+  // Validasi file gambar
+  if (!req.file) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Gambar kategori is required." });
+  }
+
+  const gambar = req.file.path; // Path file dari multer
+
+  // Validasi field
+  if (!nama_kategori || !penjelasan) {
+    return res
+      .status(400)
+      .json({ success: false, message: "All fields are required." });
   }
 
   try {
+    // Simpan ke database
     await query(
       "INSERT INTO kategori (nama_kategori, penjelasan, gambar) VALUES (?, ?, ?)",
       [nama_kategori, penjelasan, gambar]
@@ -19,7 +32,6 @@ export const addKategori = async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error", error });
   }
 };
-
 // Menampilkan semua kategori
 export const getAllKategori = async (req, res) => {
   try {
