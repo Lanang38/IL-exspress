@@ -1,5 +1,5 @@
 import { query } from '../Database/db.js';  // Adjusted path to your database module
-import { adminImages } from "../middlewares/multerAdmin.js";
+
 
 // Login using email and password
 export const loginAdmin = async (req, res) => {

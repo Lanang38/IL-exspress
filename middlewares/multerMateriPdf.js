@@ -1,7 +1,7 @@
 import multer from "multer";
 import path from "path";
 
-// Konfigurasi Multer untuk penyimpanan file
+// Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/materi/pdf");
@@ -12,10 +12,10 @@ const storage = multer.diskStorage({
     const fileExtension = path.extname(file.originalname);
     const fileName = `${uniqueNumber}-${timestamp}${fileExtension}`;
     cb(null, fileName);
-  },
+  }
 });
 
-// Filter file untuk hanya menerima PDF
+// File filter
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === "application/pdf") {
     cb(null, true);
@@ -24,11 +24,11 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Inisialisasi Multer
+// Multer configuration
 const MateriPDF = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter: fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max size
+  fileFilter: fileFilter
 });
 
 export { MateriPDF };

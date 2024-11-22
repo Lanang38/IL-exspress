@@ -1,7 +1,7 @@
 import multer from "multer";
 import path from "path";
 
-// Konfigurasi Multer untuk penyimpanan file
+// Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/materi/images");
@@ -12,10 +12,10 @@ const storage = multer.diskStorage({
     const fileExtension = path.extname(file.originalname);
     const fileName = `${uniqueNumber}-${timestamp}${fileExtension}`;
     cb(null, fileName);
-  },
+  }
 });
 
-// Filter file untuk hanya menerima gambar
+// File filter
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
   if (allowedTypes.includes(file.mimetype)) {
@@ -25,11 +25,11 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Inisialisasi Multer
+// Multer configuration
 const materiImages = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max size
+  fileFilter: fileFilter
 });
 
 export { materiImages };

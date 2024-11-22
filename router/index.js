@@ -19,4 +19,5 @@ router.use('/notifRouter', notificationRoutes);
 router.use('/penggunaRouter', penggunaRoutes);
 router.use('/kategoriRouter', kategoriRouters);
 router.use('/modulRouter', modulRouters);
+
 export default router;
