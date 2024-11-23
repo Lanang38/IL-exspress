@@ -1,12 +1,13 @@
 import { query } from "../Database/db.js";
 
-
 // Tambah data modul
 export const createModul = async (req, res) => {
   const { nama_modul, text_module, kategori_id } = req.body;
-  const file = req.file ? req.file.path : null;
-  const gambar = req.body.gambar || null;
-  const video = req.body.video || null;
+
+  // File upload paths
+  const gambar = req.files?.gambar?.[0]?.path || null;
+  const video = req.files?.video?.[0]?.path || null;
+  const file = req.files?.file?.[0]?.path || null;
 
   if (!nama_modul || !kategori_id) {
     return res.status(400).json({ success: false, message: "Field nama_modul dan kategori_id wajib diisi." });
@@ -14,8 +15,8 @@ export const createModul = async (req, res) => {
 
   try {
     await query(
-      "INSERT INTO modul (nama_modul, text_module, file, gambar, video, kategori_id) VALUES (?, ?, ?, ?, ?, ?)",
-      [nama_modul, text_module, file, gambar, video, kategori_id]
+      "INSERT INTO modul (nama_modul, text_module, gambar, video, file, kategori_id) VALUES (?, ?, ?, ?, ?, ?)",
+      [nama_modul, text_module, gambar, video, file, kategori_id]
     );
     res.status(201).json({ success: true, message: "Modul berhasil dibuat." });
   } catch (error) {
@@ -28,24 +29,21 @@ export const createModul = async (req, res) => {
 export const getAllModuls = async (req, res) => {
   try {
     const moduls = await query(
-      "SELECT modul_id, nama_modul, text_module, file, gambar, video, tanggal_modul, kategori_id FROM modul ORDER BY tanggal_modul DESC"
+      "SELECT modul_id, nama_modul, text_module, gambar, video, file, tanggal_modul, kategori_id FROM modul ORDER BY tanggal_modul DESC"
     );
 
     if (moduls.length === 0) {
       return res.status(404).json({ success: false, message: "Tidak ada modul ditemukan." });
     }
 
-    res.status(200).json({
-      success: true,
-      data: moduls,
-    });
+    res.status(200).json({ success: true, data: moduls });
   } catch (error) {
     console.error("Error saat mengambil modul:", error);
     res.status(500).json({ success: false, message: "Kesalahan Server", error });
   }
 };
 
-// Menampilkan data modul hanya nama dan tanggal dibuat
+// Menampilkan data modul sederhana (hanya nama dan tanggal)
 export const getModulSimple = async (req, res) => {
   try {
     const moduls = await query(
@@ -56,10 +54,7 @@ export const getModulSimple = async (req, res) => {
       return res.status(404).json({ success: false, message: "Tidak ada modul ditemukan." });
     }
 
-    res.status(200).json({
-      success: true,
-      data: moduls,
-    });
+    res.status(200).json({ success: true, data: moduls });
   } catch (error) {
     console.error("Error saat mengambil modul sederhana:", error);
     res.status(500).json({ success: false, message: "Kesalahan Server", error });
@@ -70,22 +65,23 @@ export const getModulSimple = async (req, res) => {
 export const editModul = async (req, res) => {
   const { modul_id } = req.params;
   const { nama_modul, text_module, kategori_id } = req.body;
-  const file = req.file ? req.file.path : null;  // Menangani unggahan file
-  const gambar = req.body.gambar || null; // Mengasumsikan gambar ditangani di field lain
-  const video = req.body.video || null; // Mengasumsikan video ditangani di field lain
+
+  // File upload paths
+  const gambar = req.files?.gambar?.[0]?.path || null;
+  const video = req.files?.video?.[0]?.path || null;
+  const file = req.files?.file?.[0]?.path || null;
 
   try {
-    // Periksa apakah modul ada di database
     const modulExists = await query("SELECT * FROM modul WHERE modul_id = ?", [modul_id]);
     if (modulExists.length === 0) {
       return res.status(404).json({ success: false, message: "Modul tidak ditemukan." });
     }
 
-    // Memperbarui data modul
     await query(
-      "UPDATE modul SET nama_modul = ?, text_module = ?, file = ?, gambar = ?, video = ?, kategori_id = ? WHERE modul_id = ?",
-      [nama_modul, text_module, file, gambar, video, kategori_id, modul_id]
+      "UPDATE modul SET nama_modul = ?, text_module = ?, gambar = ?, video = ?, file = ?, kategori_id = ? WHERE modul_id = ?",
+      [nama_modul, text_module, gambar, video, file, kategori_id, modul_id]
     );
+
     res.status(200).json({ success: true, message: "Modul berhasil diperbarui." });
   } catch (error) {
     console.error("Error saat memperbarui modul:", error);
@@ -98,13 +94,11 @@ export const deleteModul = async (req, res) => {
   const { modul_id } = req.params;
 
   try {
-    // Periksa apakah modul ada
     const modulExists = await query("SELECT * FROM modul WHERE modul_id = ?", [modul_id]);
     if (modulExists.length === 0) {
       return res.status(404).json({ success: false, message: "Modul tidak ditemukan." });
     }
 
-    // Hapus data modul
     await query("DELETE FROM modul WHERE modul_id = ?", [modul_id]);
     res.status(200).json({ success: true, message: "Modul berhasil dihapus." });
   } catch (error) {
