@@ -9,9 +9,7 @@ import {
 } from "../controllers/module.js";
 
 // Import middleware untuk gambar, video, dan PDF
-import { materiImages } from "../middlewares/multerMateriImages.js";
-import { materiVideos } from "../middlewares/multerMateriVideos.js";
-import { MateriPDF } from "../middlewares/multerMateriPdf.js";
+
 
 // Fungsi untuk menangani error khusus dari multer
 function handleMulterError(err, req, res, next) {
@@ -23,11 +21,30 @@ function handleMulterError(err, req, res, next) {
 
 const modulRouters = express.Router();
 
+//saddddddddddddd
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/materi/pdf");
+  },
+  filename: (req, file, cb) => {
+    const fileName = `${Date.now()}-${file.originalname}`;
+    cb(null, fileName);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === "application/pdf") {
+    cb(null, true);
+  } else {
+    cb(new Error("Only PDF files are allowed!"), false);
+  }
+};
+
 // Tambah data modul dengan gambar, video, atau PDF
 modulRouters.post(
   "/moduls",
   (req, res, next) => {
-    const upload = multer().fields([
+    const upload = multer({storage, fileFilter}).fields([
       { name: "gambar", maxCount: 1 },
       { name: "video", maxCount: 1 },
       { name: "file", maxCount: 1 },
