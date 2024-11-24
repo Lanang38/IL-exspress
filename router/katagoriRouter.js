@@ -11,18 +11,25 @@ const kategoriRouters = express.Router();
 
 // Route untuk menambahkan kategori dengan upload file
 kategoriRouters.post(
-  "/kategori",
-  kategoriImages.single("gambar"), // Middleware multer untuk satu file
+  "/",
+  (req, res, next) => {
+    kategoriImages.single("gambar")(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({ error: err.message }); // Tampilkan error multer
+      }
+      next();
+    });
+  },
   addKategori
 );
 
 // Route untuk mendapatkan semua kategori
-kategoriRouters.get("/kategori", getAllKategori);
+kategoriRouters.get("/", getAllKategori);
 
 // Route untuk mendapatkan kategori sederhana (hanya nama dan gambar)
-kategoriRouters.get("/kategori/simple", getSimpleKategori);
+kategoriRouters.get("/nama", getSimpleKategori);
 
 // Route untuk menghapus kategori berdasarkan ID
-kategoriRouters.delete("/kategori/:kategori_id", deleteKategori);
+kategoriRouters.delete("/:kategori_id", deleteKategori);
 
 export default kategoriRouters;

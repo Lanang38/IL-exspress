@@ -1,23 +1,24 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import bodyParser from 'body-parser';
-import { testConnection } from './Database/db.js'; // Import the DB connection
-import router from './router/index.js'; // Import the main router
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import bodyParser from "body-parser";
+import { testConnection } from "./Database/db.js";
+import router from "./router/index.js";
 
 dotenv.config();
+
 const app = express();
 
-// Middleware for parsing request body
-app.use(bodyParser.urlencoded({ extended: true }));
+// Middleware global
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-// Gunakan router utama
-app.use('/', router);
+// Router utama
+app.use("/api/v1", router);
 
-// Start the server
+// Start server
 app.listen(process.env.APP_PORT, async () => {
-  await testConnection();  // Ensure database connection works
-  console.log(`Running at http://localhost:${process.env.APP_PORT}`);
+  await testConnection();
+  console.log(`Server running at http://localhost:${process.env.APP_PORT}`);
 });

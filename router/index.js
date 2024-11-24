@@ -5,21 +5,19 @@ import fiturRoutes from './fiturRouter.js';
 import mentorRoutes from './mentorRouter.js';
 import notificationRoutes from './notificationRouter.js';
 import penggunaRoutes from './penggunaRouter.js';
-import kategoriRouters from './katagoriRouter.js';
-import modulRouters from './moduleRouter.js';
+import kategoriRoutes from './katagoriRouter.js';
+import modulRoutes from './moduleRouter.js';
 
 const router = express.Router();
 
-
-
 // Gabungkan semua route
-router.use('/adminRouter', adminRoutes);
-router.use('/catatanRouter', catatanRoutes);
-router.use('/fiturRouter', fiturRoutes);
-router.use('/mentorRouter', mentorRoutes);
-router.use('/notifRouter', notificationRoutes);
-router.use('/penggunaRouter', penggunaRoutes);
-router.use('/kategoriRouter', kategoriRouters);
-router.use('/modulRouter', modulRouters);
+router.use('/admin', adminRoutes);
+router.use('/catatan', catatanRoutes);
+router.use('/fitur', fiturRoutes);
+router.use('/mentor', mentorRoutes);
+router.use('/notifikasi', notificationRoutes);
+router.use('/pengguna', penggunaRoutes);
+router.use('/kategori', kategoriRoutes);
+router.use('/modul', modulRoutes);
 
 export default router;
