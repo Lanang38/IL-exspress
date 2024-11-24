@@ -9,6 +9,8 @@ export const createModul = async (req, res) => {
   const video = req.files?.video?.[0]?.path || null;
   const file = req.files?.file?.[0]?.path || null;
 
+  console.log(req, file)
+  
   if (!nama_modul || !kategori_id) {
     return res.status(400).json({ success: false, message: "Field nama_modul dan kategori_id wajib diisi." });
   }
