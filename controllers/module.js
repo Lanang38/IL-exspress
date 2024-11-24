@@ -16,8 +16,9 @@ export const createModul = async (req, res) => {
   }
 
   try {
+    // Query with NOW() for tanggal_modul
     await query(
-      "INSERT INTO modul (nama_modul, text_module, gambar, video, file, kategori_id) VALUES (?, ?, ?, ?, ?, ?)",
+      "INSERT INTO modul (nama_modul, text_module, gambar, video, file, kategori_id, tanggal_modul) VALUES (?, ?, ?, ?, ?, ?, NOW())",
       [nama_modul, text_module, gambar, video, file, kategori_id]
     );
     res.status(201).json({ success: true, message: "Modul berhasil dibuat." });
@@ -26,7 +27,6 @@ export const createModul = async (req, res) => {
     res.status(500).json({ success: false, message: "Kesalahan Server", error });
   }
 };
-
 // Menampilkan semua data modul
 export const getAllModuls = async (req, res) => {
   try {
