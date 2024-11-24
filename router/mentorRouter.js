@@ -9,9 +9,9 @@ import {
 const mentorRoutes = express.Router();
 
 // Routes untuk mentor
-mentorRoutes.post("/mentor", tambahMentor);
-mentorRoutes.put("/mentor/email/:email_mentor", editMentorByEmail);
-mentorRoutes.delete("/mentor/email/:email_mentor", hapusMentor);
-mentorRoutes.get("/mentor", ambilSemuaMentor);
+mentorRoutes.post("/", tambahMentor);
+mentorRoutes.put("/:email_mentor", editMentorByEmail);
+mentorRoutes.delete("/:email_mentor", hapusMentor);
+mentorRoutes.get("/", ambilSemuaMentor);
 
 export default mentorRoutes;
