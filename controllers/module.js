@@ -74,13 +74,15 @@ export const editModul = async (req, res) => {
   const file = req.files?.file?.[0]?.path || null;
 
   try {
+    // Cek apakah modul dengan ID yang diberikan ada di database
     const modulExists = await query("SELECT * FROM modul WHERE modul_id = ?", [modul_id]);
     if (modulExists.length === 0) {
       return res.status(404).json({ success: false, message: "Modul tidak ditemukan." });
     }
 
+    // Update modul termasuk tanggal_modul ke waktu saat ini
     await query(
-      "UPDATE modul SET nama_modul = ?, text_module = ?, gambar = ?, video = ?, file = ?, kategori_id = ? WHERE modul_id = ?",
+      "UPDATE modul SET nama_modul = ?, text_module = ?, gambar = ?, video = ?, file = ?, kategori_id = ?, tanggal_modul = NOW() WHERE modul_id = ?",
       [nama_modul, text_module, gambar, video, file, kategori_id, modul_id]
     );
 
