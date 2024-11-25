@@ -43,9 +43,17 @@ export const getAllKategori = async (req, res) => {
       return res.status(404).json({ success: false, message: "No categories found." });
     }
 
+    // Pastikan gambar memiliki path lengkap
+    const baseUrl = "http://localhost:3000/uploads/kategori/images/";
+
+    const result = kategoris.map(kategori => ({
+      ...kategori,
+      gambar: baseUrl + kategori.gambar,  // Menggabungkan base URL dengan nama gambar
+    }));
+
     res.status(200).json({
       success: true,
-      data: kategoris,
+      data: result,
     });
   } catch (error) {
     console.error("Error fetching kategori:", error);
