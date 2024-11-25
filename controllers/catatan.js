@@ -2,21 +2,24 @@ import { query } from "../Database/db.js";
 
 // Menambahkan catatan
 export const tambahCatatan = async (req, res) => {
-  const { isi_catatan } = req.body;
+  const { isi_catatan } = req.body; // Ambil data fitur dari request
   try {
+    // Hitung jumlah fitur yang ada
     const countResult = await query("SELECT COUNT(*) AS total FROM catatan");
-    const totalCatatan = countResult[0].total;
+    const totalFitur = countResult[0].total;
 
-    if (totalCatatan >= 3) {
+    // Jika sudah ada 2 fitur, hapus fitur terlama
+    if (totalFitur >= 4) {
       await query("DELETE FROM catatan ORDER BY tanggal_dibuat ASC LIMIT 1");
     }
 
+    // Tambahkan fitur baru
     await query("INSERT INTO catatan (isi_catatan) VALUES (?)", [isi_catatan]);
 
     return res.status(201).json({ msg: "Catatan berhasil ditambahkan" });
   } catch (error) {
-    console.error("Gagal menambahkan catatan", error);
-    res.status(500).json({ msg: "Gagal menambahkan catatan" });
+    console.error("Gagal menambahkan citur", error);
+    res.status(500).json({ msg: "Gagal menambahkan Catatan" });
   }
 };
 
@@ -40,6 +43,16 @@ export const hapusCatatan = async (req, res) => {
   } catch (error) {
     console.error("Gagal menghapus catatan", error);
     res.status(500).json({ msg: "Gagal menghapus catatan" });
+  }
+};
+
+export const getCatatan = async (req, res) => {
+  try {
+    const fitur = await query("SELECT isi_catatan FROM catatan ORDER BY tanggal_dibuat DESC"); // Hanya mengambil kolom isi_fitur
+    return res.status(200).json(fitur);
+  } catch (error) {
+    console.error("Gagal mendapatkan fitur", error);
+    res.status(500).json({ msg: "Gagal mendapatkan fitur" });
   }
 };
 
