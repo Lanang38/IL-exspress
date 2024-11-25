@@ -35,7 +35,7 @@ export const getUserByEmail = async (req, res) => {
   try {
     // Query untuk mencari pengguna berdasarkan email
     const user = await query(
-      "SELECT email_user, nama_user, telpon_user, foto_profile FROM pengguna WHERE email_user = ?",
+      "SELECT email_user, nama_user, telpon_user, tgl_pendaftaran FROM pengguna WHERE email_user = ?",
       [email_user]
     );
 
@@ -66,7 +66,7 @@ export const getUserByName = async (req, res) => {
   try {
     // Query untuk mencari pengguna berdasarkan nama
     const users = await query(
-      "SELECT email_user, nama_user, telpon_user, foto_profile FROM pengguna WHERE nama_user = ?",
+      "SELECT email_user, nama_user, telpon_user, tgl_pendaftaran FROM pengguna WHERE nama_user = ?",
       [nama_user]
     );
 
