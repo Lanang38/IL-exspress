@@ -34,4 +34,3 @@ const adminImages = multer({
 });
 
 export { adminImages };
-  
