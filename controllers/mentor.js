@@ -11,7 +11,7 @@ export const tambahMentor = async (req, res) => {
     }
     // Jika tidak ada, tambahkan mentor baru
     await query(
-      "INSERT INTO mentor (nama_mentor, email_mentor, telepon_mentor, kategori_id, link_zoom, waktu_mulai, waktu_selesai) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO mentor (nama_mentor, email_mentor, telepon_mentor, kategori_id, link_zoom, waktu_mulai, waktu_selesai) VALUES ( ?, ?, ?, ?, ?, ?, ?)",
       [req.body.nama_mentor, email_mentor, req.body.telepon_mentor, req.body.kategori_id, req.body.link_zoom, req.body.waktu_mulai, req.body.waktu_selesai]
     );
     res.status(201).json({ msg: "Mentor berhasil ditambahkan" });
@@ -59,7 +59,7 @@ export const hapusMentor = async (req, res) => {
 // Menampilkan seluruh data mentor (hanya nama, email, nomor telepon)
 export const ambilSemuaMentor = async (req, res) => {
   try {
-    const result = await query("SELECT nama_mentor, email_mentor, telepon_mentor FROM mentor");
+    const result = await query("SELECT nama_mentor, email_mentor, telepon_mentor, link_zoom FROM mentor");
     return res.status(200).json({ msg: "Data mentor berhasil diambil", data: result });
   } catch (error) {
     console.error("Gagal mengambil data mentor", error);

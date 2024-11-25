@@ -17,7 +17,7 @@ app.use(cors());
 app.use(passport.initialize()); // Inisialisasi Passport
 
 // Router utama
-app.use('/api/v1', router);
+app.use('/api/v1/', router);
 
 // Start server
 app.listen(process.env.APP_PORT, async () => {
