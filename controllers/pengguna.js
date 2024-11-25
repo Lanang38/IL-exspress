@@ -5,7 +5,7 @@ export const getUsers = async (req, res) => {
   try {
     // Query untuk mendapatkan semua data pengguna
     const users = await query(
-      "SELECT email_user, nama_user, telpon_user, foto_profile FROM pengguna ORDER BY email_user"
+      "SELECT email_user, nama_user, telpon_user, tgl_pendaftaran FROM pengguna ORDER BY email_user"
     );
 
     // Jika tidak ada data
