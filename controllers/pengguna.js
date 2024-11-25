@@ -2,29 +2,35 @@ import { query } from "../Database/db.js";
 
 // Get all users
 export const getUsers = async (req, res) => {
-  try {
-    // Query untuk mendapatkan semua data pengguna
-    const users = await query(
-      "SELECT email_user, nama_user, telpon_user, foto_profile FROM pengguna ORDER BY email_user"
-    );
+  const { nama_user, email_user } = req.query;
 
-    // Jika tidak ada data
+  try {
+    let sql = "SELECT email_user, nama_user, telpon_user, tgl_pendaftaran FROM pengguna WHERE 1=1";
+    const params = [];
+
+    if (nama_user) {
+      sql += " AND nama_user LIKE ?";
+      params.push(`%${nama_user}%`);
+    }
+
+    if (email_user) {
+      sql += " AND email_user LIKE ?";
+      params.push(`%${email_user}%`);
+    }
+
+    const users = await query(sql, params);
+
     if (users.length === 0) {
       return res.status(404).json({ success: false, message: "No users found." });
     }
 
-    // Jika data ditemukan
     res.status(200).json({
       success: true,
       data: users,
     });
   } catch (error) {
     console.error("Error fetching users:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server Error",
-      error,
-    });
+    res.status(500).json({ success: false, message: "Server Error", error });
   }
 };
 
@@ -35,7 +41,7 @@ export const getUserByEmail = async (req, res) => {
   try {
     // Query untuk mencari pengguna berdasarkan email
     const user = await query(
-      "SELECT email_user, nama_user, telpon_user, foto_profile FROM pengguna WHERE email_user = ?",
+      "SELECT email_user, nama_user, telpon_user, tgl_pendaftaran FROM pengguna WHERE email_user = ?",
       [email_user]
     );
 
@@ -66,7 +72,7 @@ export const getUserByName = async (req, res) => {
   try {
     // Query untuk mencari pengguna berdasarkan nama
     const users = await query(
-      "SELECT email_user, nama_user, telpon_user, foto_profile FROM pengguna WHERE nama_user = ?",
+      "SELECT email_user, nama_user, telpon_user, tgl_pendaftaran FROM pengguna WHERE nama_user = ?",
       [nama_user]
     );
 
@@ -91,21 +97,20 @@ export const getUserByName = async (req, res) => {
 };
 
 
-// Delete a user by ID
+// Delete a user by email
 export const deleteUser = async (req, res) => {
-  const { email_user } = req.params; // Email sebagai parameter
+  const { email_user } = req.params;
 
   try {
-    // Periksa apakah pengguna ada
     const userExists = await query("SELECT * FROM pengguna WHERE email_user = ?", [email_user]);
     if (userExists.length === 0) {
       return res.status(404).json({ success: false, message: "User not found." });
     }
 
-    // Hapus pengguna
     await query("DELETE FROM pengguna WHERE email_user = ?", [email_user]);
     res.status(200).json({ success: true, message: "User deleted successfully." });
   } catch (error) {
+    console.error("Error deleting user:", error);
     res.status(500).json({ success: false, message: "Server Error", error });
   }
 };
