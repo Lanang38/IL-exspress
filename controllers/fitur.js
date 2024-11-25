@@ -9,7 +9,7 @@ export const tambahFitur = async (req, res) => {
     const totalFitur = countResult[0].total;
 
     // Jika sudah ada 2 fitur, hapus fitur terlama
-    if (totalFitur >= 4) {
+    if (totalFitur >= 2) {
       await query("DELETE FROM fitur ORDER BY tanggal_dibuat ASC LIMIT 1");
     }
 
@@ -35,5 +35,16 @@ export const hapusFitur = async (req, res) => {
   } catch (error) {
     console.error("Gagal menghapus fitur", error);
     res.status(500).json({ msg: "Gagal menghapus fitur" });
+  }
+};
+
+// Menampilkan semua fitur
+export const getFitur = async (req, res) => {
+  try {
+    const fitur = await query("SELECT isi_fitur FROM fitur ORDER BY tanggal_dibuat DESC"); // Hanya mengambil kolom isi_fitur
+    return res.status(200).json(fitur);
+  } catch (error) {
+    console.error("Gagal mendapatkan fitur", error);
+    res.status(500).json({ msg: "Gagal mendapatkan fitur" });
   }
 };
