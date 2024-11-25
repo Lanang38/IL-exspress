@@ -4,7 +4,7 @@ import path from "path";
 // Konfigurasi Multer untuk penyimpanan file
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/kategori/images");
+    cb(null, "uploads/kategori/images"); // Folder tujuan untuk gambar
   },
   filename: (req, file, cb) => {
     const uniqueNumber = Math.floor(Math.random() * 100000);
@@ -28,7 +28,7 @@ const fileFilter = (req, file, cb) => {
 // Inisialisasi Multer
 const kategoriImages = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 }, // Batas ukuran file 5MB
   fileFilter: fileFilter,
 });
 
