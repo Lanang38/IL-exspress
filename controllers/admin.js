@@ -2,11 +2,10 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { query } from '../Database/db.js';
 
-
 const SECRET_KEY = process.env.SECRET_KEY; // Pastikan SECRET_KEY ada di .env
 const SALT_ROUNDS = 10;
 
-// Register Admin + Tambah Admin
+// **Register Admin**
 export const registerAdmin = async (req, res) => {
   const { email_admin, password, nama_admin, telepon_admin, nama_panggilan_admin, tanggal_lahir, tempat_lahir, alamat } = req.body;
   const foto_pr = req.file ? req.file.filename : null;
@@ -41,7 +40,7 @@ export const registerAdmin = async (req, res) => {
     );
 
     // Generate JWT Token
-    const payload = { email: email_admin };
+    const payload = { email: email_admin, password_hash: hashedPassword };
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
 
     res.status(201).json({
@@ -55,7 +54,43 @@ export const registerAdmin = async (req, res) => {
   }
 };
 
-// Update Data Admin
+// **Login Admin**
+export const loginAdmin = async (req, res) => {
+  const { email_admin, password } = req.body;
+
+  try {
+    const result = await query('SELECT * FROM admin WHERE email_admin = ?', [email_admin]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ msg: 'Invalid email or password' });
+    }
+
+    const admin = result[0];
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+
+    if (!isPasswordValid) {
+      return res.status(404).json({ msg: 'Invalid email or password' });
+    }
+
+    // Buat token dengan hash password
+    const token = jwt.sign(
+      {
+        email: admin.email_admin,
+        id: admin.id,
+        password_hash: admin.password, // Sertakan hash password
+      },
+      SECRET_KEY,
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ msg: 'Login successful', token });
+  } catch (error) {
+    console.error('Login failed:', error);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+// **Update Data Admin**
 export const updateAdmin = async (req, res) => {
   const { email } = req.params;
   const { nama_admin, nama_panggilan_admin, tanggal_lahir, tempat_lahir, telepon_admin, alamat } = req.body;
@@ -87,7 +122,39 @@ export const updateAdmin = async (req, res) => {
   }
 };
 
-// Hapus Admin
+// **Update Password**
+export const updatePassword = async (req, res) => {
+  const { email } = req.params;
+  const { password } = req.body;
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // Update password di database
+    const result = await query('UPDATE admin SET password = ? WHERE email_admin = ?', [
+      hashedPassword,
+      email,
+    ]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ msg: 'Admin not found' });
+    }
+
+    // Generate JWT Token baru
+    const payload = { email, password_hash: hashedPassword };
+    const newToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
+
+    res.status(200).json({
+      msg: 'Password updated successfully',
+      token: newToken, // Return new JWT token
+    });
+  } catch (error) {
+    console.error('Failed to update password:', error);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+// **Hapus Admin**
 export const hapusAdmin = async (req, res) => {
   const { email } = req.params;
 
@@ -105,7 +172,7 @@ export const hapusAdmin = async (req, res) => {
   }
 };
 
-// Ambil Admin Berdasarkan Email
+// **Ambil Admin Berdasarkan Email**
 export const ambilAdminByEmail = async (req, res) => {
   const { email } = req.params;
 
@@ -126,7 +193,7 @@ export const ambilAdminByEmail = async (req, res) => {
   }
 };
 
-// Ambil Semua Admin
+// **Ambil Semua Admin**
 export const ambilSemuaAdmin = async (req, res) => {
   try {
     const result = await query(

@@ -7,7 +7,7 @@ const SECRET_KEY = process.env.SECRET_KEY; // Ambil dari .env
 const ExtractJWT = passportJWT.ExtractJwt;
 const StrategyJWT = passportJWT.Strategy;
 
-// Passport JWT Strategy
+// **Passport JWT Strategy**
 passport.use(
   'internal-rule',
   new StrategyJWT(
@@ -17,10 +17,18 @@ passport.use(
     },
     async (payload, done) => {
       try {
+        // Ambil data admin berdasarkan email
         const result = await query('SELECT * FROM admin WHERE email_admin = ?', [payload.email]);
 
         if (result.length > 0) {
-          return done(null, result[0]);
+          const admin = result[0];
+
+          // Pastikan hash password dari payload cocok dengan hash password di database
+          if (payload.password_hash === admin.password) {
+            return done(null, admin);
+          } else {
+            return done(null, false); // Token tidak valid jika password telah berubah
+          }
         } else {
           return done(null, false);
         }
@@ -31,3 +39,5 @@ passport.use(
     }
   )
 );
+
+export default passport;
