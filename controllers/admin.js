@@ -80,7 +80,7 @@ export const loginAdmin = async (req, res) => {
         password_hash: admin.password, // Sertakan hash password
       },
       SECRET_KEY,
-      { expiresIn: '1h' }
+      { expiresIn: '1d' }
     );
 
     res.status(200).json({ msg: 'Login successful', token });
