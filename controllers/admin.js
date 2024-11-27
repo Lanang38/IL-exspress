@@ -142,7 +142,7 @@ export const updatePassword = async (req, res) => {
 
     // Generate JWT Token baru
     const payload = { email, password_hash: hashedPassword };
-    const newToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
+    const newToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '2d' });
 
     res.status(200).json({
       msg: 'Password updated successfully',
@@ -211,3 +211,5 @@ export const ambilSemuaAdmin = async (req, res) => {
     res.status(500).json({ msg: 'Failed to retrieve admins, server error' });
   }
 };
+
+
