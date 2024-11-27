@@ -7,6 +7,7 @@ import notificationRoutes from './notificationRouter.js';
 import penggunaRoutes from './penggunaRouter.js';
 import kategoriRoutes from './katagoriRouter.js';
 import modulRoutes from './moduleRouter.js';
+import laporanRoutes from './laporanRouter.js'
 
 const router = express.Router();
 
@@ -19,5 +20,6 @@ router.use('/notifikasi', notificationRoutes);
 router.use('/pengguna', penggunaRoutes);
 router.use('/kategori', kategoriRoutes);
 router.use('/modul', modulRoutes);
+router.use('/laporan', laporanRoutes);
 
 export default router;
