@@ -13,9 +13,17 @@ export const pengguna = async (req, res) => {
     const mentorResult = await query("SELECT COUNT(*) AS total FROM mentor");
     const totalMentors = mentorResult[0]?.total || 0;
 
+    // Query jumlah kategori
+    const kategoriResult = await query("SELECT COUNT(*) AS total FROM kategori");
+    const totalkategori = kategoriResult[0]?.total || 0;
+
+     // Query jumlah modul
+     const modulResult = await query("SELECT COUNT(*) AS total FROM modul");
+     const totalmodul = modulResult[0]?.total || 0;
+
     // Format response data untuk chart
     const responseData = {
-      doughnutData: {
+      pieData: {
         labels: ["Jumlah Pengguna", "Jumlah Mentor"],
         datasets: [
           {
@@ -26,6 +34,19 @@ export const pengguna = async (req, res) => {
           },
         ],
       },
+
+      doughnutData: {
+        labels: ["Jumlah Kategori", "Jumlah Modul"],
+        datasets: [
+          {
+            label: "Jumlah Total",
+            data: [totalkategori, totalmodul],
+            backgroundColor: ["rgba(70, 189, 132, 0.7)", "rgba(54, 162, 235, 0.7)"],
+            hoverBackgroundColor: ["rgba(70, 189, 132, 0.9)", "rgba(54, 162, 235, 0.9)"],
+          },
+        ],
+      },
+
       barData: {
         labels: ["Pengguna", "Mentor"],
         datasets: [
