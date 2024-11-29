@@ -21,6 +21,19 @@ export const pengguna = async (req, res) => {
      const modulResult = await query("SELECT COUNT(*) AS total FROM modul");
      const totalmodul = modulResult[0]?.total || 3;
 
+    // Query jumlah modul berdasarkan kategori
+    const kategoriModulResult = await query(`
+      SELECT k.nama_kategori, COUNT(m.modul_id) AS total_modul
+      FROM kategori k
+      LEFT JOIN modul m ON k.kategori_id = m.kategori_id
+      GROUP BY k.kategori_id
+      ORDER BY k.nama_kategori
+    `);
+
+    // Extract labels (nama kategori) dan data (jumlah modul) dari hasil query
+    const kategoriLabels = kategoriModulResult.map((item) => item.nama_kategori);
+    const modulCounts = kategoriModulResult.map((item) => item.total_modul);
+
     // Format response data untuk chart
     const responseData = {
       pieData: {
@@ -47,6 +60,7 @@ export const pengguna = async (req, res) => {
         ],
       },
 
+      
       barData: {
         labels: ["Pengguna", "Mentor", "Kategori", "Modul"],
         datasets: [
@@ -67,6 +81,20 @@ export const pengguna = async (req, res) => {
             ],
             borderRadius: 5,
             barThickness: 100,
+          },
+        ],
+      },
+
+      kategoriBarData: {
+        labels: kategoriLabels,
+        datasets: [
+          {
+            label: "Jumlah Modul ",
+            data: modulCounts,
+            backgroundColor: "rgba(70, 189, 132, 0.7)",
+            hoverBackgroundColor: "rgba(70, 189, 132, 0.9)",
+            borderRadius: 5,
+            barThickness: 50,
           },
         ],
       },
