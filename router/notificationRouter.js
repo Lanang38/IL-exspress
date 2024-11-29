@@ -1,3 +1,4 @@
+// router/notificationRouter.js
 import express from "express";
 import {
   tambahNotifikasi,
