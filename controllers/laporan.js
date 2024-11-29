@@ -11,15 +11,15 @@ export const pengguna = async (req, res) => {
 
     // Query jumlah mentor
     const mentorResult = await query("SELECT COUNT(*) AS total FROM mentor");
-    const totalMentors = mentorResult[0]?.total || 0;
+    const totalMentors = mentorResult[0]?.total || 1;
 
     // Query jumlah kategori
     const kategoriResult = await query("SELECT COUNT(*) AS total FROM kategori");
-    const totalkategori = kategoriResult[0]?.total || 0;
+    const totalkategori = kategoriResult[0]?.total || 2;
 
      // Query jumlah modul
      const modulResult = await query("SELECT COUNT(*) AS total FROM modul");
-     const totalmodul = modulResult[0]?.total || 0;
+     const totalmodul = modulResult[0]?.total || 3;
 
     // Format response data untuk chart
     const responseData = {
@@ -40,7 +40,7 @@ export const pengguna = async (req, res) => {
         datasets: [
           {
             label: "Jumlah Total",
-            data: [totalkategori, totalmodul],
+            data: [totalkategori, totalmodul,],
             backgroundColor: ["rgba(70, 189, 132, 0.7)", "rgba(54, 162, 235, 0.7)"],
             hoverBackgroundColor: ["rgba(70, 189, 132, 0.9)", "rgba(54, 162, 235, 0.9)"],
           },
@@ -48,14 +48,25 @@ export const pengguna = async (req, res) => {
       },
 
       barData: {
-        labels: ["Pengguna", "Mentor"],
+        labels: ["Pengguna", "Mentor", "Kategori", "Modul"],
         datasets: [
           {
             label: "Jumlah",
-            data: [totalUsers, totalMentors],
-            backgroundColor: ["rgba(70, 189, 132, 0.7)", "rgba(54, 162, 235, 0.7)"],
+            data: [totalUsers, totalMentors, totalkategori, totalmodul],
+            backgroundColor: [
+              'rgba(70, 189, 132, 0.7)',
+              'rgba(54, 162, 235, 0.7)',
+              'rgba(70, 189, 132, 0.7)',
+              'rgba(54, 162, 235, 0.7)'
+            ],
+            hoverbackgroundColor: [
+              'rgba(70, 189, 132, 0.9)',
+              'rgba(54, 162, 235, 0.9)',
+              'rgba(70, 189, 132, 0.9)',
+              'rgba(54, 162, 235, 0.9)'
+            ],
             borderRadius: 5,
-            barThickness: 30,
+            barThickness: 100,
           },
         ],
       },
