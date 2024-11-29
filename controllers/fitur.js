@@ -8,7 +8,7 @@ export const tambahFitur = async (req, res) => {
     const totalFitur = countResult[0]?.total || 0;
 
     // Jika sudah ada 2 fitur, hapus fitur terlama
-    if (totalFitur >= 2) {
+    if (totalFitur >= 3) {
       await query("DELETE FROM fitur ORDER BY tanggal_dibuat ASC LIMIT 1");
     }
 
