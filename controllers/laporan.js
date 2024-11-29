@@ -29,8 +29,8 @@ export const pengguna = async (req, res) => {
           {
             label: "Jumlah Total",
             data: [totalUsers, totalMentors],
-            backgroundColor: ["rgba(70, 189, 132, 0.7)", "rgba(54, 162, 235, 0.7)"],
-            hoverBackgroundColor: ["rgba(70, 189, 132, 0.9)", "rgba(54, 162, 235, 0.9)"],
+            backgroundColor: ["rgba(70, 189, 132, 0.7)", "rgba(221, 56, 56, 0.7)"],
+            hoverBackgroundColor: ["rgba(70, 189, 132, 0.9)", "rgba(221, 56, 56, 0.9)"],
           },
         ],
       },
@@ -41,8 +41,8 @@ export const pengguna = async (req, res) => {
           {
             label: "Jumlah Total",
             data: [totalkategori, totalmodul,],
-            backgroundColor: ["rgba(70, 189, 132, 0.7)", "rgba(54, 162, 235, 0.7)"],
-            hoverBackgroundColor: ["rgba(70, 189, 132, 0.9)", "rgba(54, 162, 235, 0.9)"],
+            backgroundColor: ["rgba(70, 189, 132, 0.7)", "rgba(221, 56, 56, 0.7)"],
+            hoverBackgroundColor: ["rgba(70, 189, 132, 0.9)", "rgba(221, 56, 56, 0.9)"],
           },
         ],
       },
@@ -55,15 +55,15 @@ export const pengguna = async (req, res) => {
             data: [totalUsers, totalMentors, totalkategori, totalmodul],
             backgroundColor: [
               'rgba(70, 189, 132, 0.7)',
-              'rgba(54, 162, 235, 0.7)',
+              'rgba(221, 56, 56, 0.7)',
               'rgba(70, 189, 132, 0.7)',
-              'rgba(54, 162, 235, 0.7)'
+              'rgba(221, 56, 56, 0.7)'
             ],
             hoverbackgroundColor: [
               'rgba(70, 189, 132, 0.9)',
-              'rgba(54, 162, 235, 0.9)',
+              'rgba(221, 56, 56, 0.9)',
               'rgba(70, 189, 132, 0.9)',
-              'rgba(54, 162, 235, 0.9)'
+              'rgba(221, 56, 56, 0.9)'
             ],
             borderRadius: 5,
             barThickness: 100,
