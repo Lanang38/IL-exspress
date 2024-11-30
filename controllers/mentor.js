@@ -23,6 +23,10 @@ export const tambahMentor = async (req, res) => {
       "INSERT INTO mentor (nama_mentor, email_mentor, telepon_mentor, kategori_id, link_zoom, waktu_mulai, waktu_selesai, foto_mentor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
       [nama_mentor, email_mentor, telepon_mentor, kategori_id, link_zoom, waktu_mulai, waktu_selesai, foto_mentor]
     );
+
+    // Update kolom email_mentor di tabel kategori
+    await query("UPDATE kategori SET email_mentor = ? WHERE kategori_id = ?", [email_mentor, kategori_id]);
+
     res.status(201).json({ msg: "Mentor berhasil ditambahkan" });
   } catch (error) {
     console.error("Gagal menambahkan mentor:", error.message);
@@ -48,6 +52,8 @@ export const editMentorByEmail = async (req, res) => {
       return res.status(404).json({ msg: "Mentor tidak ditemukan" });
     }
 
+    const kategori_lama_id = existing[0].kategori_id; // Dapatkan kategori lama dari mentor
+
     // Perbarui data mentor
     const result = await query(
       "UPDATE mentor SET nama_mentor = ?, telepon_mentor = ?, kategori_id = ?, link_zoom = ?, waktu_mulai = ?, waktu_selesai = ?, foto_mentor = ? WHERE email_mentor = ?",
@@ -57,6 +63,15 @@ export const editMentorByEmail = async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ msg: "Mentor tidak ditemukan" });
     }
+
+    // Kosongkan kolom email_mentor di kategori lama, jika mentor pindah kategori
+    if (kategori_id !== kategori_lama_id) {
+      await query("UPDATE kategori SET email_mentor = NULL WHERE kategori_id = ?", [kategori_lama_id]);
+    }
+
+    // Update kolom email_mentor di kategori baru
+    await query("UPDATE kategori SET email_mentor = ? WHERE kategori_id = ?", [email_mentor, kategori_id]);
+
     res.status(200).json({ msg: "Mentor berhasil diupdate" });
   } catch (error) {
     console.error("Gagal mengupdate mentor:", error.message);
@@ -73,18 +88,25 @@ export const hapusMentor = async (req, res) => {
   }
 
   try {
+    // Periksa apakah mentor ada
+    const mentor = await query("SELECT * FROM mentor WHERE email_mentor = ?", [email_mentor]);
+    if (mentor.length === 0) {
+      return res.status(404).json({ msg: "Mentor tidak ditemukan" });
+    }
+
+    // Hapus mentor
     const result = await query("DELETE FROM mentor WHERE email_mentor = ?", [email_mentor]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ msg: "Mentor tidak ditemukan" });
     }
+
     res.status(200).json({ msg: "Mentor berhasil dihapus" });
   } catch (error) {
     console.error("Gagal menghapus mentor:", error.message);
     res.status(500).json({ msg: "Gagal menghapus mentor" });
   }
 };
-
 // Menampilkan seluruh data mentor
 export const ambilSemuaMentor = async (req, res) => {
   try {
