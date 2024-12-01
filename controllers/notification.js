@@ -99,3 +99,32 @@ export const tambahNotifikasi = async (req, res) => {
       res.status(500).json({ msg: "Gagal menghapus notifikasi" });
     }
   };
+
+
+
+export const ambilNotifikasikategori = async (req, res) => {
+  try {
+    const result = await query(
+      `
+      SELECT 
+        k.kategori_id,
+        k.nama_kategori,
+        m.nama_mentor,
+        m.waktu_mulai,
+        m.waktu_selesai
+      FROM kategori k
+      LEFT JOIN mentor m ON k.kategori_id = m.kategori_id
+      `
+    );
+
+    return res.status(200).json({
+      msg: "Data kategori berhasil diambil",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Gagal mengambil kategori", error);
+    return res.status(500).json({
+      msg: "Gagal mengambil kategori. Silakan coba lagi nanti.",
+    });
+  }
+};
