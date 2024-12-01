@@ -5,6 +5,7 @@ import {
   ambilNotifikasiById,
   editNotifikasi,
   hapusNotifikasi,
+  ambilNotifikasikategori
 } from "../controllers/notification.js";
 
 const notificationRoutes = express.Router();
@@ -17,6 +18,8 @@ notificationRoutes.get("/", ambilSemuaNotifikasi);
 
 // Ambil notifikasi berdasarkan ID
 notificationRoutes.get("/:id", ambilNotifikasiById);
+
+notificationRoutes.get("/kategori/mentor", ambilNotifikasikategori);
 
 // Edit notifikasi berdasarkan ID
 notificationRoutes.put("/:id", editNotifikasi);
