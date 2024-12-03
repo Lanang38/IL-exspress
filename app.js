@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import passport from 'passport';
 import './middlewares/passport.js'; // Pastikan ini mengimpor konfigurasi passport
 import router from './router/index.js';
+import path from "path";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(passport.initialize()); // Inisialisasi Passport
+app.use("/uploads/", express.static(path.resolve("uploads")));
 
 // Router utama
 app.use('/api/v1/', router);
