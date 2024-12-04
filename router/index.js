@@ -12,6 +12,7 @@ import homeRoutes from './homeRouter.js';
 import mobilenotifikasiRouter from './mobilenotifikasiRouter.js';
 import mobilemoduleRouter from './mobilemoduleRouter.js';
 import mobilekategoriRouter from './mobilekategoriRouter.js';
+import mobilepenggunaRoutes from './mobilepenggunaRouter.js';
 
 const router = express.Router();
 
@@ -29,6 +30,6 @@ router.use('/laporan', laporanRoutes);
 router.use('/mobilenotifikasi', mobilenotifikasiRouter);
 router.use('/mobilemodule', mobilemoduleRouter);
 router.use('/mobilekategori', mobilekategoriRouter);
-
+router.use('/mobilepengguna', mobilepenggunaRoutes);
 
 export default router;
