@@ -9,7 +9,7 @@ export const tambahMentor = async (req, res) => {
     return res.status(400).json({ msg: "Harap isi semua field yang diperlukan" });
   }
 
-  const foto_mentor = req.file ? req.file.path : null; // Dapatkan path gambar jika ada
+  const foto_mentor = req.file.filename; // Dapatkan path gambar jika ada
 
   try {
     // Periksa apakah email sudah ada
@@ -43,7 +43,7 @@ export const editMentorByEmail = async (req, res) => {
     return res.status(400).json({ msg: "Email mentor diperlukan untuk mengedit data" });
   }
 
-  const foto_mentor = req.file ? req.file.path : null; // Dapatkan path gambar baru jika ada
+  const foto_mentor = req.file.filename; // Dapatkan path gambar baru jika ada
 
   try {
     // Dapatkan data mentor yang ada
@@ -110,10 +110,25 @@ export const hapusMentor = async (req, res) => {
 // Menampilkan seluruh data mentor
 export const ambilSemuaMentor = async (req, res) => {
   try {
-    const result = await query("SELECT nama_mentor, email_mentor, telepon_mentor, link_zoom, foto_mentor FROM mentor");
-    res.status(200).json({ msg: "Data mentor berhasil diambil", data: result });
+    const baseUrl = "http://localhost:3000/uploads/mentor/images/"; // Base URL untuk gambar mentor
+    const result = await query(
+      "SELECT nama_mentor, email_mentor, telepon_mentor, link_zoom, foto_mentor FROM mentor"
+    );
+
+    if (result.length === 0) {
+      return res.status(404).json({ msg: "Tidak ada data mentor yang ditemukan" });
+    }
+
+    // Tambahkan path lengkap untuk gambar
+    const mentors = result.map(mentor => ({
+      ...mentor,
+      foto_mentor: baseUrl + mentor.foto_mentor, // Gabungkan base URL dengan nama file gambar
+    }));
+
+    res.status(200).json({ msg: "Data mentor berhasil diambil", data: mentors });
   } catch (error) {
     console.error("Gagal mengambil data mentor:", error.message);
     res.status(500).json({ msg: "Gagal mengambil data mentor" });
   }
 };
+
