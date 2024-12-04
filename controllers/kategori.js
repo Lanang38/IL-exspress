@@ -11,7 +11,7 @@ export const addKategori = async (req, res) => {
       .json({ success: false, message: "Gambar kategori is required." });
   }
 
-  const gambar = req.file.path; // Path file dari multer
+  const gambar = req.file.filename; // Path file dari multer
 
   // Validasi field
   if (!nama_kategori || !penjelasan) {
