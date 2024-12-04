@@ -7,10 +7,9 @@ const storage = multer.diskStorage({
     cb(null, "uploads/kategori/images"); // Folder tujuan untuk gambar
   },
   filename: (req, file, cb) => {
-    const uniqueNumber = Math.floor(Math.random() * 100000);
-    const timestamp = Date.now();
-    const fileExtension = path.extname(file.originalname);
-    const fileName = `${uniqueNumber}-${timestamp}${fileExtension}`;
+    const timestamp = new Date().getMilliseconds();
+    const fileName = `${timestamp}-${file.originalname}`;
+    console.log(file);
     cb(null, fileName); // Simpan file dengan nama ini
   },
 });
