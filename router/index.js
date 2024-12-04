@@ -8,6 +8,7 @@ import penggunaRoutes from './penggunaRouter.js';
 import kategoriRoutes from './katagoriRouter.js';
 import modulRoutes from './moduleRouter.js';
 import laporanRoutes from './laporanRouter.js';
+import homeRoutes from './homeRouter.js';
 import mobilenotifikasiRouter from './mobilenotifikasiRouter.js';
 import mobilemoduleRouter from './mobilemoduleRouter.js';
 import mobilekategoriRouter from './mobilekategoriRouter.js';
@@ -16,6 +17,7 @@ const router = express.Router();
 
 // Gabungkan semua route
 router.use('/admin', adminRoutes);
+router.use('/home', homeRoutes);
 router.use('/catatan', catatanRoutes);
 router.use('/fitur', fiturRoutes);
 router.use('/mentor', mentorRoutes);
