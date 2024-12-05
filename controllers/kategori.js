@@ -1,20 +1,25 @@
 import { query } from "../Database/db.js";
 
+// Base URL untuk gambar dan icon
+const baseUrlImages = "http://localhost:3000/uploads/kategori/images/";
+const baseUrlIcons = "http://localhost:3000/uploads/kategori/icons/";
+
 // Menambahkan kategori
 export const addKategori = async (req, res) => {
-  const { nama_kategori, penjelasan } = req.body;
+  const { nama_kategori, penjelasan, email_mentor } = req.body;
 
-  // Validasi file gambar
-  if (!req.file) {
+  // Validasi file gambar dan icon
+  if (!req.files || !req.files.gambar || !req.files.icon) {
     return res
       .status(400)
-      .json({ success: false, message: "Gambar kategori is required." });
+      .json({ success: false, message: "Gambar dan icon kategori is required." });
   }
 
-  const gambar = req.file.filename; // Path file dari multer
+  const gambar = req.files.gambar[0].filename; // Path file gambar dari multer
+  const icon = req.files.icon[0].filename;     // Path file icon dari multer
 
   // Validasi field
-  if (!nama_kategori || !penjelasan) {
+  if (!nama_kategori || !penjelasan || !email_mentor) {
     return res
       .status(400)
       .json({ success: false, message: "All fields are required." });
@@ -23,8 +28,8 @@ export const addKategori = async (req, res) => {
   try {
     // Simpan ke database
     await query(
-      "INSERT INTO kategori (nama_kategori, penjelasan, gambar) VALUES (?, ?, ?)",
-      [nama_kategori, penjelasan, gambar]
+      "INSERT INTO kategori (nama_kategori, penjelasan, gambar, icon, email_mentor) VALUES (?, ?, ?, ?, ?)",
+      [nama_kategori, penjelasan, gambar, icon, email_mentor]
     );
     res.status(201).json({ success: true, message: "Kategori added successfully." });
   } catch (error) {
@@ -32,23 +37,23 @@ export const addKategori = async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error", error });
   }
 };
+
 // Menampilkan semua kategori
 export const getAllKategori = async (req, res) => {
   try {
     const kategoris = await query(
-      "SELECT kategori_id, nama_kategori, penjelasan, gambar, tanggal_dibuat, email_mentor FROM kategori ORDER BY tanggal_dibuat DESC"
+      "SELECT kategori_id, nama_kategori, penjelasan, gambar, icon, tanggal_dibuat, email_mentor FROM kategori ORDER BY tanggal_dibuat DESC"
     );
 
     if (kategoris.length === 0) {
       return res.status(404).json({ success: false, message: "No categories found." });
     }
 
-    // Pastikan gambar memiliki path lengkap
-    const baseUrl = "http://localhost:3000/uploads/kategori/images/";
-
+    // Pastikan gambar dan icon memiliki path lengkap
     const result = kategoris.map(kategori => ({
       ...kategori,
-      gambar: baseUrl + kategori.gambar,  // Menggabungkan base URL dengan nama gambar
+      gambar: baseUrlImages + kategori.gambar, // Menggabungkan base URL dengan nama gambar
+      icon: baseUrlIcons + kategori.icon,     // Menggabungkan base URL dengan nama icon
     }));
 
     res.status(200).json({
@@ -61,20 +66,27 @@ export const getAllKategori = async (req, res) => {
   }
 };
 
-// Menampilkan kategori hanya nama dan gambar
+// Menampilkan kategori hanya nama, gambar, dan icon
 export const getSimpleKategori = async (req, res) => {
   try {
     const kategoris = await query(
-      "SELECT nama_kategori, gambar FROM kategori ORDER BY nama_kategori"
+      "SELECT nama_kategori, gambar, icon FROM kategori ORDER BY nama_kategori"
     );
 
     if (kategoris.length === 0) {
       return res.status(404).json({ success: false, message: "No categories found." });
     }
 
+    // Pastikan gambar dan icon memiliki path lengkap
+    const result = kategoris.map(kategori => ({
+      ...kategori,
+      gambar: baseUrlImages + kategori.gambar,
+      icon: baseUrlIcons + kategori.icon,
+    }));
+
     res.status(200).json({
       success: true,
-      data: kategoris,
+      data: result,
     });
   } catch (error) {
     console.error("Error fetching kategori:", error);

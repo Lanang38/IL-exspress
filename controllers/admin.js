@@ -92,7 +92,7 @@ export const loginAdmin = async (req, res) => {
 export const updateAdmin = async (req, res) => {
   const { email } = req.params;
   const { nama_admin, nama_panggilan_admin, tanggal_lahir, tempat_lahir, telepon_admin, alamat } = req.body;
-  const foto_pr = req.file ? req.file.filename : null;
+  const foto_pr = req.file.filename;
 
   console.log('Received data:', req.body);  // Cek data yang diterima
   console.log('Received email:', email);
@@ -201,13 +201,14 @@ export const ambilAdminByEmail = async (req, res) => {
 // **Ambil Semua Admin**
 export const ambilSemuaAdmin = async (req, res) => {
   try {
+    const baseUrl = "http://localhost:3000/uploads/admin/images/";
     const result = await query(
       'SELECT foto_pr, nama_panggilan_admin, email_admin, telepon_admin FROM admin'
     );
 
     const dataWithFotoURL = result.map((admin) => ({
       ...admin,
-      foto_pr: admin.foto_pr ? `${process.env.BASE_URL}/uploads/${admin.foto_pr}` : null,
+      foto_pr: baseUrl + admin.foto_pr,
     }));
 
     res.status(200).json({ msg: 'All admins retrieved successfully', data: dataWithFotoURL });
