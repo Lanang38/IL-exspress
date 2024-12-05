@@ -92,7 +92,7 @@ export const loginAdmin = async (req, res) => {
 export const updateAdmin = async (req, res) => {
   const { email } = req.params;
   const { nama_admin, nama_panggilan_admin, tanggal_lahir, tempat_lahir, telepon_admin, alamat } = req.body;
-  const foto_pr = req.file.filename;
+  const foto_pr = req.file ? req.file.filename : null;
 
   console.log('Received data:', req.body);  // Cek data yang diterima
   console.log('Received email:', email);
