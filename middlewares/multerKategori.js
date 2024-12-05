@@ -1,10 +1,15 @@
 import multer from "multer";
-import path from "path";
 
-// Konfigurasi Multer untuk penyimpanan file
+// Konfigurasi penyimpanan file
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/kategori/images"); // Folder tujuan untuk gambar
+    if (file.fieldname === "gambar") {
+      cb(null, "uploads/kategori/images"); // Direktori untuk gambar
+    } else if (file.fieldname === "icon") {
+      cb(null, "uploads/kategori/icons"); // Direktori untuk icon
+    } else {
+      cb(new Error("Invalid file type!"), false); // Field tidak sesuai
+    }
   },
   filename: (req, file, cb) => {
     const timestamp = new Date().getMilliseconds();
@@ -14,9 +19,9 @@ const storage = multer.diskStorage({
   },
 });
 
-// Filter file untuk hanya menerima gambar
+// Filter untuk memastikan hanya tipe gambar yang diizinkan
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif"]; // Tipe file yang diizinkan
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
@@ -24,11 +29,21 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Inisialisasi Multer
-const kategoriImages = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Batas ukuran file 5MB
-  fileFilter: fileFilter,
-});
+// Inisialisasi Multer dengan batas file dan filter
+export const upload = multer({ 
+  storage, 
+  fileFilter 
+}).fields([
+  { name: "gambar", maxCount: 1 }, // Field untuk gambar
+  { name: "icon", maxCount: 1 },   // Field untuk icon
+]);
 
-export { kategoriImages };
+// Middleware untuk menangani error dari Multer
+export const handleMulterError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: err.message });
+  } else if (err) {
+    return res.status(400).json({ error: err.message });
+  }
+  next();
+};
