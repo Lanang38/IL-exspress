@@ -89,14 +89,16 @@ export const loginAdmin = async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 };
-
-// **Update Data Admin**
 export const updateAdmin = async (req, res) => {
   const { email } = req.params;
   const { nama_admin, nama_panggilan_admin, tanggal_lahir, tempat_lahir, telepon_admin, alamat } = req.body;
   const foto_pr = req.file ? req.file.filename : null;
 
+  console.log('Received data:', req.body);  // Cek data yang diterima
+  console.log('Received email:', email);
+
   try {
+    // Debug query parameters
     const result = await query(
       'UPDATE admin SET nama_admin = ?, nama_panggilan_admin = ?, tanggal_lahir = ?, tempat_lahir = ?, telepon_admin = ?, alamat = ?, foto_pr = ? WHERE email_admin = ?',
       [
@@ -111,16 +113,19 @@ export const updateAdmin = async (req, res) => {
       ]
     );
 
+    console.log('Database query result:', result);  // Log hasil query
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ msg: 'Admin not found' });
     }
 
     res.status(200).json({ msg: 'Admin updated successfully' });
   } catch (error) {
-    console.error('Failed to update admin:', error);
+    console.error('Failed to update admin:', error);  // Log error
     res.status(500).json({ msg: 'Failed to update admin, server error' });
   }
 };
+
 
 // **Update Password**
 export const updatePassword = async (req, res) => {
