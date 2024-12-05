@@ -1,13 +1,18 @@
 import { query } from "../Database/db.js";
 
+// Base URL untuk gambar dan icon
+const baseUrlImages = "http://localhost:3000/uploads/materi/images/";
+const baseUrlFile = "http://localhost:3000/uploads/materi/pdf/";
+const baseUrlVideos = "http://localhost:3000/uploads/materi/videos/";
+
 // Tambah data modul
 export const createModul = async (req, res) => {
   const { nama_modul, text_module, kategori_id } = req.body;
 
   // File upload paths
-  const gambar = req.files?.gambar?.[0]?.path || null;
-  const video = req.files?.video?.[0]?.path || null;
-  const file = req.files?.file?.[0]?.path || null;
+  const gambar = req.files.gambar ? req.files.gambar[0].filename : null;
+  const video = req.files.video ? req.files.video[0].filename : null;
+  const file = req.files.file ? req.files.file[0].filename : null;
 
   console.log(req, file)
   
@@ -37,8 +42,15 @@ export const getAllModuls = async (req, res) => {
     if (moduls.length === 0) {
       return res.status(404).json({ success: false, message: "Tidak ada modul ditemukan." });
     }
+    
+    const result = moduls.map(modul => ({
+      ...modul,
+      gambar: modul.gambar ? baseUrlImages + modul.gambar : null,
+      video: modul.video ? baseUrlVideos + modul.video : null,
+      file: modul.file ? baseUrlFile + modul.file : null
+    }));
 
-    res.status(200).json({ success: true, data: moduls });
+    res.status(200).json({ success: true, data: result });
   } catch (error) {
     console.error("Error saat mengambil modul:", error);
     res.status(500).json({ success: false, message: "Kesalahan Server", error });
@@ -56,7 +68,14 @@ export const getModulSimple = async (req, res) => {
       return res.status(404).json({ success: false, message: "Tidak ada modul ditemukan." });
     }
 
-    res.status(200).json({ success: true, data: moduls });
+    const result = moduls.map(modul => ({
+      ...modul,
+      gambar: modul.gambar ? baseUrlImages + modul.gambar : null,
+      video: modul.video ? baseUrlVideos + modul.video : null,
+      file: modul.file ? baseUrlFile + modul.file : null
+    }));
+
+    res.status(200).json({ success: true, data: result });
   } catch (error) {
     console.error("Error saat mengambil modul sederhana:", error);
     res.status(500).json({ success: false, message: "Kesalahan Server", error });
@@ -69,9 +88,9 @@ export const editModul = async (req, res) => {
   const { nama_modul, text_module, kategori_id } = req.body;
 
   // File upload paths
-  const gambar = req.files?.gambar?.[0]?.path || null;
-  const video = req.files?.video?.[0]?.path || null;
-  const file = req.files?.file?.[0]?.path || null;
+  const gambar = req.files.gambar ? req.files.gambar[0].filename : null;
+  const video = req.files.video ? req.files.video[0].filename : null;
+  const file = req.files.file ? req.files.file[0].filename : null;
 
   try {
     // Cek apakah modul dengan ID yang diberikan ada di database
