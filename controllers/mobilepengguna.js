@@ -105,7 +105,7 @@ export const registerUsers = async (req, res) => {
     // Simpan data user baru ke dalam database
     await query(
       `INSERT INTO pengguna (nama_user, email_user, password, telpon_user, tgl_pendaftaran) VALUES (?, ?, ?, ?, now())`,
-      [nama_user, email_user, hashedPassword, telpon_user]
+      [nama_user, email_user, hashedPassword, telpon_user, tgl_pendaftaran]
     );
 
     // Generate JWT Token
