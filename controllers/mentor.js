@@ -9,7 +9,7 @@ export const tambahMentor = async (req, res) => {
     return res.status(400).json({ msg: "Harap isi semua field yang diperlukan" });
   }
 
-  const foto_mentor = req.file.filename; // Dapatkan path gambar jika ada
+  const foto_mentor = req.file ? req.file.filename : null // Dapatkan path gambar jika ada
 
   try {
     // Periksa apakah email sudah ada
@@ -43,7 +43,7 @@ export const editMentorByEmail = async (req, res) => {
     return res.status(400).json({ msg: "Email mentor diperlukan untuk mengedit data" });
   }
 
-  const foto_mentor = req.file.filename; // Dapatkan path gambar baru jika ada
+  const foto_mentor = req.file ? req.file.filename : null // Dapatkan path gambar baru jika ada
 
   try {
     // Dapatkan data mentor yang ada

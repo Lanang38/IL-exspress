@@ -6,7 +6,7 @@ const baseUrlIcons = "http://localhost:3000/uploads/kategori/icons/";
 
 // Menambahkan kategori
 export const addKategori = async (req, res) => {
-  const { nama_kategori, penjelasan, email_mentor } = req.body;
+  const { nama_kategori, penjelasan } = req.body;
 
   // Validasi file gambar dan icon
   if (!req.files || !req.files.gambar || !req.files.icon) {
@@ -15,11 +15,11 @@ export const addKategori = async (req, res) => {
       .json({ success: false, message: "Gambar dan icon kategori is required." });
   }
 
-  const gambar = req.files.gambar[0].filename; // Path file gambar dari multer
-  const icon = req.files.icon[0].filename;     // Path file icon dari multer
+  const gambar = req.files.gambar ? req.files.gambar[0].filename : null;
+  const icon = req.files.icon ? req.files.icon[0].filename : null;
 
   // Validasi field
-  if (!nama_kategori || !penjelasan || !email_mentor) {
+  if (!nama_kategori || !penjelasan) {
     return res
       .status(400)
       .json({ success: false, message: "All fields are required." });
@@ -28,8 +28,8 @@ export const addKategori = async (req, res) => {
   try {
     // Simpan ke database
     await query(
-      "INSERT INTO kategori (nama_kategori, penjelasan, gambar, icon, email_mentor) VALUES (?, ?, ?, ?, ?)",
-      [nama_kategori, penjelasan, gambar, icon, email_mentor]
+      "INSERT INTO kategori (nama_kategori, penjelasan, gambar, icon) VALUES (?, ?, ?, ?)",
+      [nama_kategori, penjelasan, gambar, icon]
     );
     res.status(201).json({ success: true, message: "Kategori added successfully." });
   } catch (error) {
@@ -42,7 +42,7 @@ export const addKategori = async (req, res) => {
 export const getAllKategori = async (req, res) => {
   try {
     const kategoris = await query(
-      "SELECT kategori_id, nama_kategori, penjelasan, gambar, icon, tanggal_dibuat, email_mentor FROM kategori ORDER BY tanggal_dibuat DESC"
+      "SELECT kategori_id, nama_kategori, penjelasan, gambar, icon, tanggal_dibuat FROM kategori ORDER BY tanggal_dibuat DESC"
     );
 
     if (kategoris.length === 0) {
