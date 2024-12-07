@@ -125,7 +125,7 @@ export const ambilSemuaMentor = async (req, res) => {
       foto_mentor: baseUrl + mentor.foto_mentor, // Gabungkan base URL dengan nama file gambar
     }));
 
-    res.status(200).json({ msg: "Data mentor berhasil diambil", data: mentors });
+    res.status(200).json({ msg: "Data pengguna berhasil diambil", data: mentors });
   } catch (error) {
     console.error("Gagal mengambil data mentor:", error.message);
     res.status(500).json({ msg: "Gagal mengambil data mentor" });
