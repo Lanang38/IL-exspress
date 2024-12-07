@@ -3,8 +3,15 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { google } from 'googleapis';
 import bcrypt from 'bcrypt';
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
+
+
 
 dotenv.config();
+
+// Simpan kode OTP di memori (atau gunakan database jika diperlukan)
+const otpStore = new Map(); // { email_user: { otp, expiresAt } }
 
 // Load environment variables from .env file
 const SECRET_KEY = process.env.SECRET_KEY; // Pastikan SECRET_KEY ada di file .env
@@ -67,16 +74,15 @@ export const googleAuthCallback = async (req, res) => {
     const user = result[0];
 
     // Generate token JWT
-    const payload = { email: user.email_user, id: user.id };
+    const payload = { email: user.email_user }; // Menggunakan email sebagai payload
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1d' });
 
     // Response dengan token JWT
     res.status(200).json({
       msg: 'Google Login successful',
       user: {
-        id: user.id,
-        nama_user: user.nama_user,
         email_user: user.email_user,
+        nama_user: user.nama_user,
         foto_profile: user.foto_profile,
       },
       token,
@@ -109,7 +115,7 @@ export const registerUsers = async (req, res) => {
     );
 
     // Generate JWT Token
-    const payload = { email: email_user };
+    const payload = { email: email_user }; // Menggunakan email sebagai payload
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
 
     res.status(201).json({
@@ -144,7 +150,7 @@ export const loginUsers = async (req, res) => {
 
     // Buat token JWT
     const token = jwt.sign(
-      { email: user.email_user, id: user.id },
+      { email: user.email_user }, // Menggunakan email sebagai payload
       SECRET_KEY,
       { expiresIn: '1d' }
     );
@@ -155,3 +161,186 @@ export const loginUsers = async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
+// Update data pengguna
+export const updatePengguna = async (req, res) => {
+  const { email_user, nama_user, telpon_user } = req.body;
+  const foto_profile = req.file ? req.file.filename : null; // Ambil nama file yang diunggah
+
+  try {
+    // Validasi apakah pengguna dengan email_user yang diberikan ada
+    const result = await query('SELECT * FROM pengguna WHERE email_user = ?', [email_user]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ msg: 'Pengguna tidak ditemukan' });
+    }
+
+    // Ambil foto_profile yang sudah ada jika tidak ada file baru
+    const existingFotoProfile = result[0].foto_profile;
+
+    // Update nama_user, telpon_user, dan foto_profile berdasarkan email_user
+    await query(
+      `UPDATE pengguna SET nama_user = ?, telpon_user = ?, foto_profile = ? WHERE email_user = ?`,
+      [nama_user, telpon_user, foto_profile || existingFotoProfile, email_user]
+    );
+
+    res.status(200).json({ msg: 'Data pengguna berhasil diupdate' });
+  } catch (error) {
+    console.error('Gagal mengupdate data pengguna:', error.message);
+    res.status(500).json({ msg: 'Gagal mengupdate data pengguna' });
+  }
+};
+
+// Menampilkan  data pengguna
+export const ambilSemuaPengguna = async (req, res) => {
+  try {
+    const baseUrl = "http://localhost:3000/uploads/pengguna/images/"; 
+    const result = await query(
+      "SELECT nama_user, email_user, telpon_user, foto_profile FROM pengguna"
+    );
+
+    if (result.length === 0) {
+      return res.status(404).json({ msg: "Tidak ada data pengguna yang ditemukan" });
+    }
+
+    // Tambahkan path lengkap untuk gambar
+    const users = result.map(pengguna => ({
+      ...pengguna,
+      foto_profile: baseUrl + pengguna.foto_profile, // Gabungkan base URL dengan nama file gambar
+    }));
+
+    res.status(200).json({ msg: "Data pengguna berhasil diambil", data: users });
+  } catch (error) {
+    console.error("Gagal mengambil data pengguna:", error.message);
+    res.status(500).json({ msg: "Gagal mengambil data pengguna" });
+  }
+};
+
+export const updatePassword = async (req, res) => {
+  const { email_user, oldPassword, newPassword, confirmPassword } = req.body;
+
+  try {
+    // Validasi apakah email pengguna ada di database
+    const result = await query('SELECT * FROM pengguna WHERE email_user = ?', [email_user]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ msg: 'Pengguna tidak ditemukan' });
+    }
+
+    const user = result[0];
+
+    // Verifikasi apakah password lama cocok
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ msg: 'Password lama salah' });
+    }
+
+    // Validasi apakah password baru dan konfirmasi password cocok
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ msg: 'Password baru dan konfirmasi password tidak cocok' });
+    }
+
+    // Hash password baru sebelum menyimpan ke database
+    const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+    // Update password di database
+    await query('UPDATE pengguna SET password = ? WHERE email_user = ?', [hashedPassword, email_user]);
+
+    res.status(200).json({ msg: 'Password berhasil diupdate' });
+  } catch (error) {
+    console.error('Gagal mengupdate password:', error.message);
+    res.status(500).json({ msg: 'Gagal mengupdate password' });
+  }
+};
+
+
+// **Lupa Password - Kirim OTP ke Email**
+export const lupaPassword = async (req, res) => {
+  const { email_user } = req.body;
+
+  try {
+    // Validasi apakah email pengguna ada di database
+    const result = await query('SELECT * FROM pengguna WHERE email_user = ?', [email_user]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ msg: 'Email tidak ditemukan' });
+    }
+
+    // Generate kode OTP (4 digit)
+    const otp = crypto.randomInt(1000, 9999);
+
+    // Simpan OTP ke memori dengan waktu kedaluwarsa 15 menit
+    const expiresAt = Date.now() + 15 * 60 * 1000; // 15 menit
+    otpStore.set(email_user, { otp, expiresAt });
+
+    // Konfigurasi transport email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail', // Sesuaikan dengan penyedia email Anda
+      auth: {
+        user: process.env.EMAIL_SENDER, // Email pengirim
+        pass: process.env.EMAIL_PASSWORD, // Password atau App Password
+      },
+    });
+
+    // Kirim email dengan OTP
+    const mailOptions = {
+      from: process.env.EMAIL_SENDER,
+      to: email_user,
+      subject: 'Kode OTP Reset Password',
+      text: `Kode OTP Anda untuk reset password adalah ${otp}. Kode ini berlaku selama 15 menit.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ msg: 'Kode OTP telah dikirim ke email Anda' });
+  } catch (error) {
+    console.error('Gagal mengirim OTP:', error.message);
+    res.status(500).json({ msg: 'Gagal mengirim OTP' });
+  }
+};
+
+// **Reset Password dengan OTP**
+export const resetPasswordWithOTP = async (req, res) => {
+  const { email_user, otp, newPassword, confirmPassword } = req.body;
+
+  try {
+    // Validasi apakah email pengguna ada di database
+    const result = await query('SELECT * FROM pengguna WHERE email_user = ?', [email_user]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ msg: 'Email tidak ditemukan' });
+    }
+
+    // Ambil OTP yang tersimpan
+    const storedOtp = otpStore.get(email_user);
+
+    if (!storedOtp) {
+      return res.status(400).json({ msg: 'OTP tidak valid atau sudah kedaluwarsa' });
+    }
+
+    // Validasi OTP dan waktu kedaluwarsa
+    if (storedOtp.otp !== parseInt(otp) || Date.now() > storedOtp.expiresAt) {
+      return res.status(400).json({ msg: 'OTP tidak valid atau sudah kedaluwarsa' });
+    }
+
+    // Validasi password baru dan konfirmasi password
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ msg: 'Password baru dan konfirmasi password tidak cocok' });
+    }
+
+    // Hash password baru
+    const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+    // Update password di database
+    await query('UPDATE pengguna SET password = ? WHERE email_user = ?', [hashedPassword, email_user]);
+
+    // Hapus OTP setelah berhasil reset
+    otpStore.delete(email_user);
+
+    res.status(200).json({ msg: 'Password berhasil direset' });
+  } catch (error) {
+    console.error('Gagal reset password:', error.message);
+    res.status(500).json({ msg: 'Gagal reset password' });
+  }
+};
+
