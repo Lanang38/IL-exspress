@@ -270,7 +270,7 @@ export const lupaPassword = async (req, res) => {
     const otp = crypto.randomInt(1000, 9999);
 
     // Simpan OTP ke memori dengan waktu kedaluwarsa 15 menit
-    const expiresAt = Date.now() + 15 * 60 * 1000; // 15 menit
+    const expiresAt = Date.now() + 60 * 60 * 1000; // 15 menit
     otpStore.set(email_user, { otp, expiresAt });
 
     // Konfigurasi transport email
@@ -287,7 +287,7 @@ export const lupaPassword = async (req, res) => {
       from: process.env.EMAIL_SENDER,
       to: email_user,
       subject: 'Kode OTP Reset Password',
-      text: `Kode OTP Anda untuk reset password adalah ${otp}. Kode ini berlaku selama 15 menit.`,
+      text: `Kode OTP Anda untuk reset password adalah ${otp}. Kode ini berlaku selama 30 menit.`,
     };
 
     await transporter.sendMail(mailOptions);
