@@ -112,7 +112,7 @@ export const ambilSemuaMentor = async (req, res) => {
   try {
     const baseUrl = "http://localhost:3000/uploads/mentor/images/"; // Base URL untuk gambar mentor
     const result = await query(
-      "SELECT nama_mentor, email_mentor, telepon_mentor, link_zoom, foto_mentor FROM mentor"
+      "SELECT nama_mentor, email_mentor, telepon_mentor, link_zoom, foto_mentor, kategori_id, waktu_mulai, waktu_selesai FROM mentor"
     );
 
     if (result.length === 0) {
