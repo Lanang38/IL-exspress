@@ -95,6 +95,7 @@ export const getSimpleKategori = async (req, res) => {
 };
 
 // Menghapus kategori berdasarkan ID
+// Menghapus kategori berdasarkan ID
 export const deleteKategori = async (req, res) => {
   const { kategori_id } = req.params;
 
@@ -109,8 +110,12 @@ export const deleteKategori = async (req, res) => {
       return res.status(404).json({ success: false, message: "Kategori not found." });
     }
 
+    // Set kategori_id di tabel mentor menjadi NULL sebelum menghapus kategori
+    await query("UPDATE mentor SET kategori_id = NULL WHERE kategori_id = ?", [kategori_id]);
+
     // Hapus kategori
     await query("DELETE FROM kategori WHERE kategori_id = ?", [kategori_id]);
+
     res.status(200).json({ success: true, message: "Kategori deleted successfully." });
   } catch (error) {
     console.error("Error deleting kategori:", error);
