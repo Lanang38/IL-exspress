@@ -91,16 +91,48 @@ export const loginAdmin = async (req, res) => {
 };
 export const updateAdmin = async (req, res) => {
   const { email } = req.params;
-  const { nama_admin, nama_panggilan_admin, tanggal_lahir, tempat_lahir, telepon_admin, alamat } = req.body;
-  const foto_pr = req.file ? req.file.filename : null;
+  const {
+    nama_admin,
+    nama_panggilan_admin,
+    tanggal_lahir,
+    tempat_lahir,
+    telepon_admin,
+    alamat,
+  } = req.body;
 
-  console.log('Received data:', req.body);  // Cek data yang diterima
-  console.log('Received email:', email);
+  // Mengambil foto lama dari database jika tidak ada foto baru
+  let foto_pr;
 
   try {
-    // Debug query parameters
+    // Ambil foto lama terlebih dahulu
+    const adminData = await query(
+      'SELECT foto_pr FROM admin WHERE email_admin = ?',
+      [email]
+    );
+
+    // Jika admin ditemukan, set foto_pr sesuai dengan foto lama
+    if (adminData.length > 0) {
+      foto_pr = adminData[0].foto_pr;
+    } else {
+      return res.status(404).json({ msg: 'Admin not found' });
+    }
+
+    // Jika ada file baru yang diunggah, ganti foto_pr dengan foto baru
+    if (req.file) {
+      foto_pr = req.file.filename;
+    }
+
+    // Query untuk memperbarui data admin
     const result = await query(
-      'UPDATE admin SET nama_admin = ?, nama_panggilan_admin = ?, tanggal_lahir = ?, tempat_lahir = ?, telepon_admin = ?, alamat = ?, foto_pr = ? WHERE email_admin = ?',
+      `UPDATE admin 
+       SET nama_admin = ?, 
+           nama_panggilan_admin = ?, 
+           tanggal_lahir = ?, 
+           tempat_lahir = ?, 
+           telepon_admin = ?, 
+           alamat = ?, 
+           foto_pr = ? 
+       WHERE email_admin = ?`,
       [
         nama_admin,
         nama_panggilan_admin,
@@ -108,12 +140,12 @@ export const updateAdmin = async (req, res) => {
         tempat_lahir,
         telepon_admin,
         alamat,
-        foto_pr,
+        foto_pr,  // Gunakan foto_pr yang sudah diatur
         email,
       ]
     );
 
-    console.log('Database query result:', result);  // Log hasil query
+    console.log('Database query result:', result);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ msg: 'Admin not found' });
@@ -121,11 +153,10 @@ export const updateAdmin = async (req, res) => {
 
     res.status(200).json({ msg: 'Admin updated successfully' });
   } catch (error) {
-    console.error('Failed to update admin:', error);  // Log error
+    console.error('Failed to update admin:', error);
     res.status(500).json({ msg: 'Failed to update admin, server error' });
   }
 };
-
 
 // **Update Password**
 export const updatePassword = async (req, res) => {
@@ -182,6 +213,7 @@ export const ambilAdminByEmail = async (req, res) => {
   const { email } = req.params;
 
   try {
+    const baseUrl = "http://localhost:3000/uploads/admin/images/";
     const result = await query('SELECT * FROM admin WHERE email_admin = ?', [email]);
 
     if (result.length === 0) {
@@ -189,7 +221,7 @@ export const ambilAdminByEmail = async (req, res) => {
     }
 
     const admin = result[0];
-    admin.foto_pr = admin.foto_pr ? `${process.env.BASE_URL}/uploads/${admin.foto_pr}` : null;
+    admin.foto_pr = admin.foto_pr ? baseUrl + admin.foto_pr : null;
 
     res.status(200).json({ msg: 'Admin retrieved successfully', data: admin });
   } catch (error) {
