@@ -191,28 +191,48 @@ export const updatePengguna = async (req, res) => {
   }
 };
 
-// Menampilkan  data pengguna
+// Menampilkan data pengguna berdasarkan akun yang login
 export const ambilSemuaPengguna = async (req, res) => {
+  const baseUrl = "http://localhost:3000/uploads/pengguna/images/"; // URL untuk file gambar
+
+  // Ambil token dari header Authorization
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ msg: 'Token tidak diberikan atau tidak valid' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
   try {
-    const baseUrl = "http://localhost:3000/uploads/pengguna/images/"; 
+    // Verifikasi token JWT
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+    if (!decoded.email) {
+      return res.status(401).json({ msg: 'Token tidak valid' });
+    }
+
+    // Ambil email dari payload token
+    const email_user = decoded.email;
+
+    // Ambil data pengguna berdasarkan email
     const result = await query(
-      "SELECT nama_user, email_user, telpon_user, foto_profile FROM pengguna"
+      'SELECT nama_user, email_user, telpon_user, foto_profile FROM pengguna WHERE email_user = ?',
+      [email_user]
     );
 
     if (result.length === 0) {
-      return res.status(404).json({ msg: "Tidak ada data pengguna yang ditemukan" });
+      return res.status(404).json({ msg: 'Data pengguna tidak ditemukan' });
     }
 
     // Tambahkan path lengkap untuk gambar
-    const users = result.map(pengguna => ({
-      ...pengguna,
-      foto_profile: baseUrl + pengguna.foto_profile, // Gabungkan base URL dengan nama file gambar
-    }));
+    const pengguna = result[0];
+    pengguna.foto_profile = baseUrl + pengguna.foto_profile;
 
-    res.status(200).json({ msg: "Data pengguna berhasil diambil", data: users });
+    res.status(200).json({ msg: 'Data pengguna berhasil diambil', data: pengguna });
   } catch (error) {
-    console.error("Gagal mengambil data pengguna:", error.message);
-    res.status(500).json({ msg: "Gagal mengambil data pengguna" });
+    console.error('Gagal mengambil data pengguna:', error.message);
+    res.status(500).json({ msg: 'Gagal mengambil data pengguna' });
   }
 };
 
