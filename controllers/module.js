@@ -2,17 +2,15 @@ import { query } from "../Database/db.js";
 
 // Base URL untuk gambar dan icon
 const baseUrlImages = "http://localhost:3000/uploads/materi/images/";
-const baseUrlFile = "http://localhost:3000/uploads/materi/pdf/";
-const baseUrlVideos = "http://localhost:3000/uploads/materi/videos/";
+//const baseUrlFile = "http://localhost:3000/uploads/materi/pdf/";
+//const baseUrlVideos = "http://localhost:3000/uploads/materi/videos/";
 
 // Tambah data modul
 export const createModul = async (req, res) => {
-  const { nama_modul, text_module, kategori_id } = req.body;
+  const { nama_modul, text_module, kategori_id, video, file} = req.body;
 
   // File upload paths
-  const gambar = req.files.gambar ? req.files.gambar[0].filename : null;
-  const video = req.files.video ? req.files.video[0].filename : null;
-  const file = req.files.file ? req.files.file[0].filename : null;
+  const gambar = req.file ? req.file.filename : null
 
   console.log(req, file)
   
@@ -45,9 +43,7 @@ export const getAllModuls = async (req, res) => {
     
     const result = moduls.map(modul => ({
       ...modul,
-      gambar: modul.gambar ? baseUrlImages + modul.gambar : null,
-      video: modul.video ? baseUrlVideos + modul.video : null,
-      file: modul.file ? baseUrlFile + modul.file : null
+      gambar : baseUrlImages + modul.gambar,
     }));
 
     res.status(200).json({ success: true, data: result });
@@ -70,9 +66,7 @@ export const getModulSimple = async (req, res) => {
 
     const result = moduls.map(modul => ({
       ...modul,
-      gambar: modul.gambar ? baseUrlImages + modul.gambar : null,
-      video: modul.video ? baseUrlVideos + modul.video : null,
-      file: modul.file ? baseUrlFile + modul.file : null
+      gambar : baseUrlImages + modul.gambar,
     }));
 
     res.status(200).json({ success: true, data: result });
@@ -85,12 +79,10 @@ export const getModulSimple = async (req, res) => {
 // Edit data modul
 export const editModul = async (req, res) => {
   const { modul_id } = req.params;
-  const { nama_modul, text_module, kategori_id } = req.body;
+  const { nama_modul, text_module, kategori_id, video, file } = req.body;
 
   // File upload paths
-  const gambar = req.files.gambar ? req.files.gambar[0].filename : null;
-  const video = req.files.video ? req.files.video[0].filename : null;
-  const file = req.files.file ? req.files.file[0].filename : null;
+  const gambar = req.file ? req.file.filename : null;
 
   try {
     // Cek apakah modul dengan ID yang diberikan ada di database

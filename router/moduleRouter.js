@@ -6,12 +6,12 @@ import {
   editModul,
   deleteModul,
 } from "../controllers/module.js";
-import { upload, handleMulterError } from "../middlewares/multerModul.js";
+import { modulImages } from "../middlewares/multerModul.js";
 
 const router = express.Router();
 
 // Tambah data modul
-router.post("/", upload, handleMulterError, createModul);
+router.post("/", modulImages.single("gambar"), createModul);
 
 // Menampilkan semua data modul
 router.get("/", getAllModuls);
@@ -20,7 +20,7 @@ router.get("/", getAllModuls);
 router.get("/nama", getModulSimple);
 
 // Edit data modul
-router.put("/:modul_id", upload, handleMulterError, editModul);
+router.put("/:modul_id", modulImages.single("gambar"), editModul);
 
 // Hapus data modul
 router.delete("/:modul_id", deleteModul);
