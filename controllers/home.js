@@ -3,6 +3,8 @@ import { query } from "../Database/db.js";
 /**
  * Controller untuk mendapatkan data dashboard
  */
+
+
 export const home = async (req, res) => {
   try {
     // Query jumlah pengguna
@@ -22,12 +24,14 @@ export const home = async (req, res) => {
     const totalmodul = hasilmodul[0]?.total || 3;
 
     // Query data mentor
+    const baseUrl = "http://localhost:3000/uploads/mentor/images/";
     const hasilMentorData = await query(`
       SELECT 
         nama_mentor, 
         link_zoom, 
         waktu_mulai, 
-        waktu_selesai 
+        waktu_selesai,
+        foto_mentor
       FROM mentor
     `);
     const mentorData = hasilMentorData.map((mentor) => ({
@@ -35,6 +39,7 @@ export const home = async (req, res) => {
       zoomLink: mentor.link_zoom,
       startTime: mentor.waktu_mulai,
       endTime: mentor.waktu_selesai,
+      foto: baseUrl + mentor.foto_mentor,
     }));
 
     // Format response data untuk chart dan mentor
